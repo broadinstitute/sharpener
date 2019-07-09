@@ -1,0 +1,217 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Sharpener API"
+host: "indigo.ncats.io"
+basePath: "/sharpener"
+schemes:
+- "https"
+paths:
+  /create_gene_list:
+    post:
+      tags:
+      - "sharpener"
+      operationId: "create_gene_list_post"
+      parameters:
+      - in: "body"
+        name: "query"
+        description: "transformer query"
+        required: true
+        schema:
+          type: "array"
+          items:
+            type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/gene_list"
+      x-swagger-router-controller: "swagger_server.controllers.sharpener_controller"
+  /transformers:
+    get:
+      tags:
+      - "sharpener"
+      operationId: "transformers_get"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/transformer_info"
+      x-swagger-router-controller: "swagger_server.controllers.sharpener_controller"
+  /transform:
+    post:
+      tags:
+      - "sharpener"
+      operationId: "transform_post"
+      parameters:
+      - in: "body"
+        name: "query"
+        description: "transformer query"
+        required: true
+        schema:
+          $ref: "#/definitions/transformer_query"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/gene_list"
+      x-swagger-router-controller: "swagger_server.controllers.sharpener_controller"
+  /aggregate:
+    post:
+      tags:
+      - "sharpener"
+      operationId: "aggregate_post"
+      parameters:
+      - in: "body"
+        name: "query"
+        description: "transformer query"
+        required: true
+        schema:
+          $ref: "#/definitions/aggregation_query"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/gene_list"
+      x-swagger-router-controller: "swagger_server.controllers.sharpener_controller"
+definitions:
+  transformer_query:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      gene_list_id:
+        type: "string"
+      controls:
+        type: "array"
+        items:
+          $ref: "#/definitions/property"
+  gene_list:
+    type: "object"
+    properties:
+      gene_list_id:
+        type: "string"
+      genes:
+        type: "array"
+        items:
+          $ref: "#/definitions/gene_info"
+    example:
+      genes:
+      - attributes:
+        - name: "name"
+          source: "source"
+          value: "value"
+        - name: "name"
+          source: "source"
+          value: "value"
+        gene_id: "gene_id"
+      - attributes:
+        - name: "name"
+          source: "source"
+          value: "value"
+        - name: "name"
+          source: "source"
+          value: "value"
+        gene_id: "gene_id"
+      gene_list_id: "gene_list_id"
+  gene_info:
+    type: "object"
+    required:
+    - "gene_id"
+    properties:
+      gene_id:
+        type: "string"
+      attributes:
+        type: "array"
+        items:
+          $ref: "#/definitions/attribute"
+    example:
+      attributes:
+      - name: "name"
+        source: "source"
+        value: "value"
+      - name: "name"
+        source: "source"
+        value: "value"
+      gene_id: "gene_id"
+  attribute:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      value:
+        type: "string"
+      source:
+        type: "string"
+    example:
+      name: "name"
+      source: "source"
+      value: "value"
+  property:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      value:
+        type: "string"
+  transformer_info:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      function:
+        type: "string"
+      parameters:
+        type: "array"
+        items:
+          $ref: "#/definitions/parameter"
+    example:
+      function: "function"
+      name: "name"
+      parameters:
+      - allowed_values:
+        - "allowed_values"
+        - "allowed_values"
+        default: "default"
+        name: "name"
+        type: "type"
+      - allowed_values:
+        - "allowed_values"
+        - "allowed_values"
+        default: "default"
+        name: "name"
+        type: "type"
+  parameter:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+        description: "type of a parameter, one of Boolean, int, double, string"
+      default:
+        type: "string"
+      allowed_values:
+        type: "array"
+        items:
+          type: "string"
+    example:
+      allowed_values:
+      - "allowed_values"
+      - "allowed_values"
+      default: "default"
+      name: "name"
+      type: "type"
+  aggregation_query:
+    type: "object"
+    properties:
+      operation:
+        type: "string"
+      gene_list_ids:
+        type: "array"
+        items:
+          type: "string"
