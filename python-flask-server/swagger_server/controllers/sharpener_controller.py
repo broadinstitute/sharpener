@@ -7,6 +7,8 @@ from swagger_server.models.transformer_info import TransformerInfo  # noqa: E501
 from swagger_server.models.transformer_query import TransformerQuery  # noqa: E501
 from swagger_server import util
 
+from swagger_server.sharpener.transformer import transformer_list
+
 
 def aggregate_post(query):  # noqa: E501
     """aggregate_post
@@ -59,4 +61,4 @@ def transformers_get():  # noqa: E501
 
     :rtype: List[TransformerInfo]
     """
-    return 'do some magic!'
+    return transformer_list()
