@@ -67,7 +67,7 @@ public class SharpenerApiController extends Controller {
         if (nodequery != null) {
             query = mapper.readValue(nodequery.toString(), new TypeReference<List<String>>(){});
             if (configuration.getBoolean("useInputBeanValidation")) {
-                for ( curItem : query) {
+                for (String curItem : query) {
                     SwaggerUtils.validate(curItem);
                 }
             }

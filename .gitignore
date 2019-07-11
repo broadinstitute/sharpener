@@ -102,3 +102,27 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Compiled class file
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+#eclipse-related files
+java-play-framework-server/.settings
+java-play-framework-server/.project
+java-play-framework-server/.classpath
+java-play-framework-server/.cache-main
+
+#sbt-generated files
+java-play-framework-server/target/
+java-play-framework-server/project/target/
+java-play-framework-server/project/project/target/
+
