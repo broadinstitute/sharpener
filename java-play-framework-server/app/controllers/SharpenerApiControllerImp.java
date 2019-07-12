@@ -7,6 +7,8 @@ import apimodels.TransformerInfo;
 import apimodels.TransformerQuery;
 
 import play.mvc.Http;
+import sharpener.Transformers;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +37,7 @@ public class SharpenerApiControllerImp implements SharpenerApiControllerImpInter
 
     @Override
     public List<TransformerInfo> transformersGet() throws Exception {
-        //Do your magic!!!
-        return new ArrayList<TransformerInfo>();
+        return Transformers.getTransformers();
     }
 
 }
