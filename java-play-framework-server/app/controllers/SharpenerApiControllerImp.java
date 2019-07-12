@@ -7,6 +7,7 @@ import apimodels.TransformerInfo;
 import apimodels.TransformerQuery;
 
 import play.mvc.Http;
+import sharpener.GeneLists;
 import sharpener.Transformers;
 
 import java.util.List;
@@ -25,8 +26,7 @@ public class SharpenerApiControllerImp implements SharpenerApiControllerImpInter
 
     @Override
     public GeneList createGeneListPost(List<String> query) throws Exception {
-        //Do your magic!!!
-        return new GeneList();
+    	return GeneLists.createList(query);
     }
 
     @Override

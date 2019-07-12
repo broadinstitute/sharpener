@@ -3,8 +3,6 @@ package sharpener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,21 +20,6 @@ public class Transformers {
 	
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	private static String get(URL url) throws IOException {
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setRequestMethod("GET");
-		con.connect();
-		int responsecode = con.getResponseCode();
-		if (responsecode != 200)
-			throw new IOException("WARNING: Failed connection (" + url + "): " + responsecode);
-		BufferedReader input = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		StringBuilder response = new StringBuilder();
-		for (String line = input.readLine(); line != null; line = input.readLine()) {
-			response.append(line).append('\n');
-		}
-		return response.toString();
-	}
-
 	public static ArrayList<TransformerInfo> getTransformers() throws IOException {
 		ArrayList<TransformerInfo> transformers = new ArrayList<TransformerInfo>();
 		Map<String, TransformerInfo> transformerMap = new HashMap<String, TransformerInfo>();
@@ -45,7 +28,7 @@ public class Transformers {
 		for (String line = transformerFile.readLine(); line != null; line = transformerFile.readLine()) {
 			try {
 				URL url = new URL(line + "/transformer_info");	
-				TransformerInfo info = mapper.readValue(get(url), TransformerInfo.class);
+				TransformerInfo info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
 				transformers.add(info);
 				urlMap.put(info.getName(), line);
 				transformerMap.put(info.getName(), info);
