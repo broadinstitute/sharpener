@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +15,8 @@ public class MyGene {
 
 	private static final String myGeneInfoSearch = "https://mygene.info/v3/query?q=%s&species=9606";
 	private static final String myGeneInfoQuery = "https://mygene.info/v3/gene/%s?fields=symbol,name,entrezgene,ensembl.gene,HGNC,MIM,alias";
+	private static final String MY_GENE_INFO_ID = "myGene.info id";
+	private static final String ENTREZ_GENE_ID = "entrez_gene_id";
 
 	static class Info {
 
@@ -25,9 +26,28 @@ public class MyGene {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
 
+		static GeneInfo addInfo(GeneInfo src) {
+			String entrez_gene_id = null;
+			for (Attribute attribute : src.getAttributes()) {
+				if (MY_GENE_INFO_ID.equals(attribute.getName())) {
+					return src;
+				}
+				if (ENTREZ_GENE_ID.equals(attribute.getName())) {
+					entrez_gene_id = attribute.getValue();
+				}
+			}
+			if (entrez_gene_id != null) {
+				try {
+					Gene gene = gene(entrez_gene_id);
+					return gene.geneInfo(src);
+				} catch (IOException e) {
+				}
+			}
+			return src;
+		}
+
 		static GeneInfo query(String id) throws IOException {
 			URL url = new URL(String.format(myGeneInfoSearch, id));
-			System.out.println(url);
 			String json = HTTP.get(url);
 			Search search = mapper.readValue(json, Search.class);
 			Gene gene = geneBySymbol(id, search);
@@ -37,9 +57,9 @@ public class MyGene {
 			if (gene == null) {
 				return unknown(id);
 			}
-			return Gene.geneInfo(gene);
+			return gene.geneInfo(new GeneInfo());
 		}
-		
+
 		static GeneInfo unknown(String id) {
 			return new GeneInfo().geneId(id)
 					.addAttributesItem(new Attribute().name("name").value("unknown gene").source("sharpener"))
@@ -71,9 +91,7 @@ public class MyGene {
 
 		private static Gene gene(String entrezgene) throws IOException {
 			URL url = new URL(String.format(myGeneInfoQuery, entrezgene));
-			System.out.println(url);
 			Gene gene = mapper.readValue(HTTP.get(url), Gene.class);
-			System.out.println(gene);
 			return gene;
 		}
 
@@ -94,7 +112,7 @@ public class MyGene {
 	}
 
 	static class Hit {
-		
+
 		private String id;
 		private String symbol;
 		private String entrezgene;
@@ -107,7 +125,7 @@ public class MyGene {
 		public void setId(String id) {
 			this.id = id;
 		}
-		
+
 		public String getSymbol() {
 			return symbol;
 		}
@@ -126,7 +144,8 @@ public class MyGene {
 	}
 
 	static class Gene {
-		
+
+		private String id;
 		private String HGNC;
 		private String MIM;
 		private Object alias;
@@ -134,6 +153,15 @@ public class MyGene {
 		private String entrezgene;
 		private String name;
 		private String symbol;
+
+		public String getId() {
+			return id;
+		}
+
+		@JsonProperty("_id")
+		public void setId(String id) {
+			this.id = id;
+		}
 
 		public String getHGNC() {
 			return HGNC;
@@ -158,11 +186,11 @@ public class MyGene {
 				return null;
 			}
 			if (alias instanceof String)
-			return new String[] {alias.toString()};
+				return new String[] { alias.toString() };
 			if (alias instanceof ArrayList) {
-				return ((ArrayList<String>)alias).toArray(new String[0]);
+				return ((ArrayList<String>) alias).toArray(new String[0]);
 			}
-			System.out.println("Warning: did not convert alias "+alias.getClass().getName());
+			System.out.println("Warning: did not convert alias " + alias.getClass().getName());
 			return null;
 		}
 
@@ -202,40 +230,44 @@ public class MyGene {
 			this.symbol = symbol;
 		}
 
-		static GeneInfo geneInfo(Gene gene) {
-			if (gene == null) {
-				return null;
-			}
-			GeneInfo geneInfo = new GeneInfo();
-			if (gene.getHGNC() != null) {
-				geneInfo.setGeneId("HGNC:"+gene.getHGNC());
-			} else if (gene.getEntrezgene() != null) {
-				geneInfo.setGeneId("NCBIgene:"+gene.getEntrezgene());
-			} else if (gene.getEnsembl() != null && gene.getEnsembl().getGene() != null) {
-				geneInfo.setGeneId(gene.getEnsembl().getGene());
+		GeneInfo geneInfo(GeneInfo geneInfo) {
+			if (getHGNC() != null) {
+				geneInfo.setGeneId("HGNC:" + getHGNC());
+			} else if (getEntrezgene() != null) {
+				geneInfo.setGeneId("NCBIgene:" + getEntrezgene());
+			} else if (getEnsembl() != null && getEnsembl().getGene() != null) {
+				geneInfo.setGeneId(getEnsembl().getGene());
 			} else {
-				geneInfo.setGeneId(gene.getSymbol());
+				geneInfo.setGeneId(getSymbol());
 			}
-			if (gene.getSymbol() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("gene_symbol").value(gene.getSymbol()).source("myGene.info"));
+			if (getId() != null) {
+				geneInfo.addAttributesItem(new Attribute().name(MY_GENE_INFO_ID).value(getId()).source("myGene.info"));
 			}
-			if (gene.getEntrezgene() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("entrez_gene_id").value(gene.getEntrezgene()).source("myGene.info"));
+			if (getSymbol() != null) {
+				geneInfo.addAttributesItem(
+						new Attribute().name("gene_symbol").value(getSymbol()).source("myGene.info"));
 			}
-			if (gene.getHGNC() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("HGNC").value("HGNC:"+gene.getHGNC()).source("myGene.info"));
+			if (getEntrezgene() != null) {
+				geneInfo.addAttributesItem(
+						new Attribute().name(ENTREZ_GENE_ID).value(getEntrezgene()).source("myGene.info"));
 			}
-			if (gene.getMIM() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("MIM").value("MIM:"+gene.getMIM()).source("myGene.info"));
+			if (getHGNC() != null) {
+				geneInfo.addAttributesItem(
+						new Attribute().name("HGNC").value("HGNC:" + getHGNC()).source("myGene.info"));
 			}
-			if (gene.getAlias() != null && gene.getAlias().length > 0) {
-				geneInfo.addAttributesItem(new Attribute().name("synonyms").value(String.join(";", gene.getAlias())).source("myGene.info"));
-			}		
-			if (gene.getEnsembl() != null && gene.getEnsembl().getGene() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("ensembl_gene_id").value(gene.getEnsembl().getGene()).source("myGene.info"));
+			if (getMIM() != null) {
+				geneInfo.addAttributesItem(new Attribute().name("MIM").value("MIM:" + getMIM()).source("myGene.info"));
 			}
-			if (gene.getName() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("gene_name").value(gene.getName()).source("myGene.info"));
+			if (getAlias() != null && getAlias().length > 0) {
+				geneInfo.addAttributesItem(
+						new Attribute().name("synonyms").value(String.join(";", getAlias())).source("myGene.info"));
+			}
+			if (getEnsembl() != null && getEnsembl().getGene() != null) {
+				geneInfo.addAttributesItem(
+						new Attribute().name("ensembl_gene_id").value(getEnsembl().getGene()).source("myGene.info"));
+			}
+			if (getName() != null) {
+				geneInfo.addAttributesItem(new Attribute().name("gene_name").value(getName()).source("myGene.info"));
 			}
 			return geneInfo;
 		}

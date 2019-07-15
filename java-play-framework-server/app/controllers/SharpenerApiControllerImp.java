@@ -31,8 +31,7 @@ public class SharpenerApiControllerImp implements SharpenerApiControllerImpInter
 
     @Override
     public GeneList transformPost(TransformerQuery query) throws Exception {
-        //Do your magic!!!
-        return new GeneList();
+    	return Transformers.transform(query);
     }
 
     @Override
