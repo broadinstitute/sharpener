@@ -20,8 +20,7 @@ import javax.validation.constraints.*;
 public class SharpenerApiControllerImp implements SharpenerApiControllerImpInterface {
     @Override
     public GeneList aggregatePost(AggregationQuery query) throws Exception {
-        //Do your magic!!!
-        return new GeneList();
+    	return GeneLists.aggregate(query);
     }
 
     @Override

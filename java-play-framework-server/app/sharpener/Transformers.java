@@ -25,42 +25,68 @@ public class Transformers {
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	public static ArrayList<TransformerInfo> getTransformers() throws IOException {
+	/** Implement /transformers API endpoint
+	 * @return
+	 */
+	public static ArrayList<TransformerInfo> getTransformers() {
 		ArrayList<TransformerInfo> transformers = new ArrayList<TransformerInfo>();
 		Map<String, TransformerInfo> transformerMap = new HashMap<String, TransformerInfo>();
 		Map<String, String> urlMap = new HashMap<String, String>();
-		BufferedReader transformerFile = new BufferedReader(new FileReader("transformers.txt"));
-		for (String line = transformerFile.readLine(); line != null; line = transformerFile.readLine()) {
-			try {
-				URL url = new URL(line + "/transformer_info");
-				TransformerInfo info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
-				transformers.add(info);
-				urlMap.put(info.getName(), line);
-				transformerMap.put(info.getName(), info);
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			BufferedReader transformerFile = new BufferedReader(new FileReader("transformers.txt"));
+			for (String line = transformerFile.readLine(); line != null; line = transformerFile.readLine()) {
+				try {
+					URL url = new URL(line + "/transformer_info");
+					TransformerInfo info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
+					transformers.add(info);
+					urlMap.put(info.getName(), line);
+					transformerMap.put(info.getName(), info);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			transformerFile.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		transformerFile.close();
 		updateMaps(transformerMap, urlMap);
 		return transformers;
 	}
 
-	synchronized static void updateMaps(Map<String, TransformerInfo> transformerMap, Map<String, String> urlMap) {
+	private synchronized static void updateMaps(Map<String, TransformerInfo> transformerMap,
+			Map<String, String> urlMap) {
 		Transformers.transformers = transformerMap;
 		Transformers.urls = urlMap;
 	}
 
-	public static GeneList transform(TransformerQuery query) throws IOException {
-		String transformerName = query.getName();
-		URL url = new URL(urls.get(transformerName) + "/transform");
-		String json = mapper.writeValueAsString(new Query(query));
-		String res = HTTP.post(url, json);
-		GeneInfo[] genes = mapper.readValue(res, GeneInfo[].class);
-		for (GeneInfo gene : genes) {
-			MyGene.Info.addInfo(gene);
+	private synchronized static String getURL(String transformerName) {
+		return urls.get(transformerName);
+	}
+
+	/** Implement /transform API endpoint
+	 * @param query
+	 * @return
+	 */
+	public static GeneList transform(TransformerQuery query) {
+		String baseURL = getURL(query.getName());
+		if (baseURL == null) {
+			return GeneLists.error("unknown transformer: '" + query.getName() + "'");
 		}
-		return GeneLists.createList(genes);
+		if (GeneLists.getGeneList(query.getGeneListId()) == null) {
+			return GeneLists.error("gene list " + query.getGeneListId() + " not found");
+		}
+		try {
+			URL url = new URL(baseURL + "/transform");
+			String json = mapper.writeValueAsString(new Query(query));
+			String res = HTTP.post(url, json);
+			GeneInfo[] genes = mapper.readValue(res, GeneInfo[].class);
+			for (GeneInfo gene : genes) {
+				MyGene.Info.addInfo(gene);
+			}
+			return GeneLists.createList(genes);
+		} catch (IOException e) {
+			return GeneLists.error(query.getName() + "(" + baseURL + "/transform) failed: " + e.getMessage());
+		}
 	}
 
 	static class Query {
@@ -68,7 +94,7 @@ public class Transformers {
 		private List<Property> controls;
 
 		Query(TransformerQuery query) {
-			genes = GeneLists.getList(query.getGeneListId()).getGenes();
+			genes = GeneLists.getGeneList(query.getGeneListId()).getGenes();
 			controls = query.getControls();
 		}
 
