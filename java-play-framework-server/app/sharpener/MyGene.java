@@ -3,6 +3,7 @@ package sharpener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apimodels.Attribute;
 import apimodels.GeneInfo;
+import play.Logger;
 
 public class MyGene {
 
@@ -21,6 +23,10 @@ public class MyGene {
 	static class Info {
 
 		private static ObjectMapper mapper = new ObjectMapper();
+		
+		private static HashMap<String, Gene> geneBySymbol = new HashMap<String, Gene>();
+		private static HashMap<String, Gene> geneByAlias = new HashMap<String, Gene>();
+		private static HashMap<String, Gene> geneByEntrez = new HashMap<String, Gene>();
 
 		static {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -47,12 +53,15 @@ public class MyGene {
 		}
 
 		static GeneInfo query(String id) throws IOException {
-			URL url = new URL(String.format(myGeneInfoSearch, id));
-			String json = HTTP.get(url);
-			Search search = mapper.readValue(json, Search.class);
-			Gene gene = geneBySymbol(id, search);
+			Gene gene = getGeneBySymbol(id);
 			if (gene == null) {
-				gene = geneByAlias(id, search);
+				URL url = new URL(String.format(myGeneInfoSearch, id));
+				String json = HTTP.get(url);
+				Search search = mapper.readValue(json, Search.class);
+				gene = geneBySymbol(id, search);
+				if (gene == null) {
+					gene = geneByAlias(id, search);
+				}				
 			}
 			if (gene == null) {
 				return unknown(id);
@@ -90,11 +99,43 @@ public class MyGene {
 		}
 
 		private static Gene gene(String entrezgene) throws IOException {
-			URL url = new URL(String.format(myGeneInfoQuery, entrezgene));
-			Gene gene = mapper.readValue(HTTP.get(url), Gene.class);
+			Gene gene = getGeneByEntrez(entrezgene);
+			if (gene == null) {
+				URL url = new URL(String.format(myGeneInfoQuery, entrezgene));
+				gene = mapper.readValue(HTTP.get(url), Gene.class);
+				save(gene);				
+			}
 			return gene;
 		}
 
+		private synchronized static void save(Gene gene) {
+			if (gene.getSymbol() != null) {
+				geneBySymbol.put(gene.getSymbol(), gene);
+
+			}
+			if (gene.getAlias() != null) {
+				for (String alias : gene.getAlias()) {
+					geneByAlias.put(alias, gene);
+				}
+			}
+			if (gene.getEntrezgene() != null) {
+				geneByEntrez.put(gene.getEntrezgene(), gene);
+			}
+		}
+
+		private synchronized static Gene getGeneBySymbol(String symbol) {
+			Gene gene = geneBySymbol.get(symbol);
+			if (gene == null) {
+				gene = geneByAlias.get(symbol);
+			}
+			return gene;
+		}
+		
+		private synchronized static Gene getGeneByEntrez(String entrezgene) {
+			return geneByEntrez.get(entrezgene);
+		}
+		
+		
 	}
 
 	static class Search {
@@ -190,7 +231,7 @@ public class MyGene {
 			if (alias instanceof ArrayList) {
 				return ((ArrayList<String>) alias).toArray(new String[0]);
 			}
-			System.out.println("Warning: did not convert alias " + alias.getClass().getName());
+			Logger.warn("did not convert alias " + alias.getClass().getName());
 			return null;
 		}
 

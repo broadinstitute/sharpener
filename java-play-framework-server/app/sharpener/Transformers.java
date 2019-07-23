@@ -16,12 +16,13 @@ import apimodels.Property;
 import apimodels.GeneInfo;
 import apimodels.TransformerInfo;
 import apimodels.TransformerQuery;
+import play.Logger;
 
 public class Transformers {
 
 	private static Map<String, TransformerInfo> transformers;
 
-	private static Map<String, String> urls;
+	private static Map<String, String> urls = new HashMap<>();
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
@@ -53,8 +54,7 @@ public class Transformers {
 		return transformers;
 	}
 
-	private synchronized static void updateMaps(Map<String, TransformerInfo> transformerMap,
-			Map<String, String> urlMap) {
+	private synchronized static void updateMaps(Map<String, TransformerInfo> transformerMap, Map<String, String> urlMap) {
 		Transformers.transformers = transformerMap;
 		Transformers.urls = urlMap;
 	}
@@ -75,18 +75,24 @@ public class Transformers {
 		if (GeneLists.getGeneList(query.getGeneListId()) == null) {
 			return GeneLists.error("gene list " + query.getGeneListId() + " not found");
 		}
+		GeneInfo[] genes = new GeneInfo[0];
 		try {
 			URL url = new URL(baseURL + "/transform");
 			String json = mapper.writeValueAsString(new Query(query));
 			String res = HTTP.post(url, json);
-			GeneInfo[] genes = mapper.readValue(res, GeneInfo[].class);
-			for (GeneInfo gene : genes) {
-				MyGene.Info.addInfo(gene);
-			}
-			return GeneLists.createList(genes);
+			genes = mapper.readValue(res, GeneInfo[].class);
 		} catch (IOException e) {
 			return GeneLists.error(query.getName() + "(" + baseURL + "/transform) failed: " + e.getMessage());
 		}
+
+		for (GeneInfo gene : genes) {
+			try {
+				MyGene.Info.addInfo(gene);
+			} catch (Exception e) {
+				Logger.warn("failed to obtaing myGene.info attributes for " + gene.getGeneId());
+			}
+		}
+		return GeneLists.createList(genes);
 	}
 
 	static class Query {
