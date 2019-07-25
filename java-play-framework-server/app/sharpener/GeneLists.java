@@ -2,7 +2,6 @@ package sharpener;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import apimodels.AggregationQuery;
 import apimodels.Attribute;
@@ -16,7 +15,8 @@ import scala.util.Random;
  */
 public class GeneLists {
 
-	private static Map<String, GeneList> geneLists = new HashMap<String, GeneList>();
+	private static TimeOrderedMap<String,GeneList> geneLists = new TimeOrderedMap<String,GeneList>(14 * 24 * 60 * 60 * 1000/* two weeks */);
+
 
 	public static GeneList createList(GeneInfo[] genes) {
 		GeneList geneList = new GeneList();
@@ -27,8 +27,11 @@ public class GeneLists {
 		return geneList;
 	}
 
-	/** Implement /create_gene_list API endpoint
-	 * @param genes
+
+	/**
+	 * Implements /create_gene_list API endpoint.
+	 * 
+	 * @param genes 
 	 * @return
 	 */
 	public static GeneList createList(List<String> genes) {
@@ -47,9 +50,12 @@ public class GeneLists {
 		return geneList;
 	}
 
-	/** Implement /aggregate API endpoint
-	 * @param query
-	 * @return
+
+	/**
+	 * Implements /aggregate API endpoint.
+	 * 
+	 * @param query aggregate query
+	 * @return Aggregated gene list
 	 */
 	public static GeneList aggregate(AggregationQuery query) {
 		if (query.getOperation().equals("union")) {
@@ -61,11 +67,12 @@ public class GeneLists {
 		}
 	}
 
+
 	private static GeneList union(List<String> geneListIds) {
 		if (geneListIds == null || geneListIds.size() == 0) {
 			return error("empty gene-list collection");
 		}
-		HashMap<String, GeneInfo> genes = new HashMap<String, GeneInfo>();
+		HashMap<String,GeneInfo> genes = new HashMap<String,GeneInfo>();
 		GeneList geneList = new GeneList();
 		for (String geneListId : geneListIds) {
 			GeneList source = getGeneList(geneListId);
@@ -86,6 +93,7 @@ public class GeneLists {
 		return geneList;
 	}
 
+
 	private static GeneList intersection(List<String> geneListIds) {
 		if (geneListIds == null || geneListIds.size() == 0) {
 			return error("empty gene-list collection");
@@ -94,7 +102,7 @@ public class GeneLists {
 		if (source == null) {
 			return error("gene list " + geneListIds.get(0) + " not found");
 		}
-		HashMap<String, GeneInfo> intersection = new HashMap<String, GeneInfo>();
+		HashMap<String,GeneInfo> intersection = new HashMap<String,GeneInfo>();
 		for (GeneInfo gene : source.getGenes()) {
 			intersection.put(gene.getGeneId(), new GeneInfo().geneId(gene.getGeneId()));
 		}
@@ -103,7 +111,7 @@ public class GeneLists {
 			if (source == null) {
 				return error("gene list " + geneListId + " not found");
 			}
-			HashMap<String, GeneInfo> newIntersection = new HashMap<String, GeneInfo>();
+			HashMap<String,GeneInfo> newIntersection = new HashMap<String,GeneInfo>();
 			for (GeneInfo gene : source.getGenes()) {
 				String geneId = gene.getGeneId();
 				if (intersection.containsKey(geneId)) {
@@ -121,23 +129,25 @@ public class GeneLists {
 		return geneList;
 	}
 
+
 	private static void mergeAttributes(GeneInfo gene, GeneInfo src) {
-		HashMap<String, HashMap<String, String>> attributes = new HashMap<String, HashMap<String, String>>();
+		HashMap<String,HashMap<String,String>> attributes = new HashMap<String,HashMap<String,String>>();
 		if (gene.getAttributes() != null && gene.getAttributes().size() > 0) {
 			for (Attribute attribute : gene.getAttributes()) {
 				if (!attributes.containsKey(attribute.getSource())) {
-					attributes.put(attribute.getSource(), new HashMap<String, String>());
+					attributes.put(attribute.getSource(), new HashMap<String,String>());
 				}
 				attributes.get(attribute.getSource()).put(attribute.getName(), attribute.getValue());
 			}
 		}
 		for (Attribute attribute : src.getAttributes()) {
-			if (!attributes.containsKey(attribute.getSource())
+			if (!attributes.containsKey(attribute.getSource()) 
 					|| !attributes.get(attribute.getSource()).containsKey(attribute.getName())) {
 				gene.addAttributesItem(attribute);
 			}
 		}
 	}
+
 
 	private synchronized static void save(GeneList geneList) {
 		String id = nextId();
@@ -145,11 +155,13 @@ public class GeneLists {
 		geneLists.put(id, geneList);
 	}
 
+
 	synchronized static GeneList getGeneList(String geneListId) {
 		return geneLists.get(geneListId);
 	}
 
 	private static Random rand = new Random();
+
 
 	private static String randString(int len) {
 		StringBuilder sb = new StringBuilder();
@@ -159,6 +171,7 @@ public class GeneLists {
 		return sb.toString();
 	}
 
+
 	private synchronized static String nextId() {
 		String id = randString(10);
 		while (geneLists.containsKey(id)) {
@@ -167,9 +180,12 @@ public class GeneLists {
 		return id;
 	}
 
-	/** Generate error message instead of GeneList
-	 * @param message
-	 * @return
+
+	/**
+	 * Generate error message instead of a GeneList.
+	 * 
+	 * @param message error message
+	 * @return instance of GeneList containing no genes and the error message as an id
 	 */
 	static GeneList error(String message) {
 		GeneList errorList = new GeneList();
