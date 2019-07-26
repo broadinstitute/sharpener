@@ -63,6 +63,14 @@ public class Transformers {
 		return urls.get(transformerName);
 	}
 
+	private synchronized static String getFunction(String transformerName) {
+		TransformerInfo transformer = transformers.get(transformerName);
+		if (transformer == null) {
+			return null;
+		}
+		return transformer.getFunction();
+	}
+	
 	/** Implement /transform API endpoint
 	 * @param query
 	 * @return
@@ -72,7 +80,7 @@ public class Transformers {
 		if (baseURL == null) {
 			return GeneLists.error("unknown transformer: '" + query.getName() + "'");
 		}
-		if (GeneLists.getGeneList(query.getGeneListId()) == null) {
+		if (GeneLists.getGeneList(query.getGeneListId()) == null && !"producer".equals(getFunction(query.getName()))) {
 			return GeneLists.error("gene list " + query.getGeneListId() + " not found");
 		}
 		GeneInfo[] genes = new GeneInfo[0];
@@ -96,17 +104,23 @@ public class Transformers {
 	}
 
 	static class Query {
-		private List<GeneInfo> genes;
+		private List<GeneInfo> genes = new ArrayList<GeneInfo>();
 		private List<Property> controls;
 
+
 		Query(TransformerQuery query) {
-			genes = GeneLists.getGeneList(query.getGeneListId()).getGenes();
+			GeneList geneList = GeneLists.getGeneList(query.getGeneListId());
+			if (geneList != null) {
+				genes = geneList.getGenes();
+			}
 			controls = query.getControls();
 		}
+
 
 		public List<GeneInfo> getGenes() {
 			return genes;
 		}
+
 
 		public List<Property> getControls() {
 			return controls;
