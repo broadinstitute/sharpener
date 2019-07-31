@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -194,6 +195,7 @@ public class MyGene {
 		}
 	}
 
+	
 	static class Search {
 
 		private Hit[] hits;
@@ -208,6 +210,7 @@ public class MyGene {
 
 	}
 
+	
 	static class Hit {
 
 		private String id;
@@ -240,13 +243,14 @@ public class MyGene {
 		}
 	}
 
+	
 	static class Gene {
 
 		private String id;
 		private String HGNC;
 		private String MIM;
 		private Object alias;
-		private Ensembl ensembl;
+		private String[] ensembl;
 		private String entrezgene;
 		private String name;
 		private String symbol;
@@ -278,6 +282,7 @@ public class MyGene {
 			MIM = mIM;
 		}
 
+		@SuppressWarnings("unchecked")
 		public String[] getAlias() {
 			if (alias == null) {
 				return null;
@@ -295,12 +300,36 @@ public class MyGene {
 			this.alias = alias;
 		}
 
-		public Ensembl getEnsembl() {
+		public String[] getEnsembl() {
 			return ensembl;
 		}
 
-		public void setEnsembl(Ensembl ensembl) {
-			this.ensembl = ensembl;
+		@SuppressWarnings("rawtypes")
+		public void setEnsembl(Object ensembl) {
+			if (ensembl instanceof Map) {
+				String gene = getEnsemblGene((Map) ensembl);
+				if (gene != null) {
+					this.ensembl = new String[] { gene };
+				}
+			} else if (ensembl instanceof ArrayList) {
+				ArrayList<String> genes = new ArrayList<String>();
+				for (Object entry : (ArrayList) ensembl) {
+					if (entry instanceof Map) {
+						String gene = getEnsemblGene((Map) entry);
+						if (gene != null) {
+							genes.add(gene);
+						}
+					}
+				}
+				this.ensembl = genes.toArray(new String[genes.size()]);
+			} else {
+				Logger.warn("did not convert ensembl " + ensembl.getClass().getName());
+			}
+		}
+		
+		@SuppressWarnings("rawtypes")
+		private String getEnsemblGene(Map map) {
+			return map.get("gene").toString();
 		}
 
 		public String getEntrezgene() {
@@ -332,8 +361,8 @@ public class MyGene {
 				geneInfo.setGeneId(getHGNC());
 			} else if (getEntrezgene() != null) {
 				geneInfo.setGeneId("NCBIgene:" + getEntrezgene());
-			} else if (getEnsembl() != null && getEnsembl().getGene() != null) {
-				geneInfo.setGeneId(getEnsembl().getGene());
+			} else if (getEnsembl() != null && getEnsembl().length > 0) {
+				geneInfo.setGeneId(getEnsembl()[0]);
 			} else {
 				geneInfo.setGeneId(getSymbol());
 			}
@@ -359,9 +388,9 @@ public class MyGene {
 				geneInfo.addAttributesItem(
 						new Attribute().name("synonyms").value(String.join(";", getAlias())).source("myGene.info"));
 			}
-			if (getEnsembl() != null && getEnsembl().getGene() != null) {
+			if (getEnsembl() != null && getEnsembl().length > 0) {
 				geneInfo.addAttributesItem(
-						new Attribute().name("ensembl_gene_id").value(getEnsembl().getGene()).source("myGene.info"));
+						new Attribute().name("ensembl_gene_id").value(String.join(";",getEnsembl())).source("myGene.info"));
 			}
 			if (getName() != null) {
 				geneInfo.addAttributesItem(new Attribute().name("gene_name").value(getName()).source("myGene.info"));
@@ -370,16 +399,5 @@ public class MyGene {
 		}
 	}
 
-	static class Ensembl {
-		private String gene;
-
-		public String getGene() {
-			return gene;
-		}
-
-		public void setGene(String gene) {
-			this.gene = gene;
-		}
-	}
 
 }

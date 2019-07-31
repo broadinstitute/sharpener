@@ -1,2 +1,3 @@
 https://indigo.ncats.io/depmap_expander
 https://indigo.ncats.io/msigdb_producer
+https://indigo.ncats.io/disease_genes_expander
