@@ -38,7 +38,7 @@ public class GeneLists {
 		GeneList geneList = new GeneList();
 		for (String symbol : genes)
 			try {
-				GeneInfo geneInfo = MyGene.Info.query(symbol);
+				GeneInfo geneInfo = MyGene.Info.querySymbol(symbol);
 				if (geneInfo != null) {
 					geneInfo.addAttributesItem(new Attribute().name("source").value("user input").source("user input"));
 					geneList.addGenesItem(geneInfo);

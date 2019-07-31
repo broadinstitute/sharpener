@@ -19,6 +19,7 @@ public class MyGene {
 	private static final String myGeneInfoQuery = "https://mygene.info/v3/gene/%s?fields=symbol,name,entrezgene,ensembl.gene,HGNC,MIM,alias";
 	private static final String MY_GENE_INFO_ID = "myGene.info id";
 	private static final String ENTREZ_GENE_ID = "entrez_gene_id";
+	private static final String HGNC = "HGNC";
 
 	static class Info {
 
@@ -27,66 +28,94 @@ public class MyGene {
 		private static HashMap<String, Gene> geneBySymbol = new HashMap<String, Gene>();
 		private static HashMap<String, Gene> geneByAlias = new HashMap<String, Gene>();
 		private static HashMap<String, Gene> geneByEntrez = new HashMap<String, Gene>();
+		private static HashMap<String, Gene> geneByHGNC = new HashMap<String, Gene>();
+
+		private static HashMap<String, Gene> geneByCURIE = new HashMap<String, Gene>();
 
 		static {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
 
 		static GeneInfo addInfo(GeneInfo src) {
-			String entrez_gene_id = null;
+			String hgncId = null;
+			String entrezGeneId = null;
 			for (Attribute attribute : src.getAttributes()) {
 				if (MY_GENE_INFO_ID.equals(attribute.getName())) {
 					return src;
 				}
 				if (ENTREZ_GENE_ID.equals(attribute.getName())) {
-					entrez_gene_id = attribute.getValue();
+					entrezGeneId = attribute.getValue();
+				}
+				if (HGNC.equals(attribute.getName())) {
+					hgncId = attribute.getValue();
 				}
 			}
-			if (entrez_gene_id != null) {
+			if (hgncId == null && src.getGeneId() != null && src.getGeneId().toUpperCase().startsWith("HGNC:")) {
+				hgncId = src.getGeneId().toUpperCase();
+			}
+			if (hgncId != null) {
 				try {
-					Gene gene = gene(entrez_gene_id);
+					Gene gene = geneByHGNC(hgncId);
 					return gene.geneInfo(src);
 				} catch (IOException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (entrezGeneId != null) {
+				try {
+					Gene gene = geneByEntrez(entrezGeneId);
+					return gene.geneInfo(src);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 			return src;
 		}
 
-		static GeneInfo query(String id) throws IOException {
-			Gene gene = getGeneBySymbol(id);
+
+		static GeneInfo querySymbol(String symbol) throws IOException {
+			Gene gene = getGeneBySymbol(symbol);
 			if (gene == null) {
-				URL url = new URL(String.format(myGeneInfoSearch, id));
-				String json = HTTP.get(url);
-				Search search = mapper.readValue(json, Search.class);
-				gene = geneBySymbol(id, search);
+				Search search = query(symbol);
+				gene = geneBySymbol(symbol, search);
 				if (gene == null) {
-					gene = geneByAlias(id, search);
-				}				
+					gene = geneByAlias(symbol, search);
+				}
 			}
 			if (gene == null) {
-				return unknown(id);
+				return unknown(symbol);
 			}
 			return gene.geneInfo(new GeneInfo());
 		}
+
 
 		static GeneInfo unknown(String id) {
 			return new GeneInfo().geneId(id)
 					.addAttributesItem(new Attribute().name("name").value("unknown gene").source("sharpener"))
 					.addAttributesItem(new Attribute().name("gene_symbol").value(id).source("user query"));
 		}
+		
+
+		private static Search query(String id) throws IOException {
+			URL url = new URL(String.format(myGeneInfoSearch, id));
+			String json = HTTP.get(url);
+			return mapper.readValue(json, Search.class);
+		}
+
 
 		private static Gene geneBySymbol(String symbol, Search searchResults) throws IOException {
 			for (Hit hit : searchResults.getHits()) {
 				if (symbol.equals(hit.getSymbol())) {
-					return gene(hit.getId());
+					return geneByEntrez(hit.getId());
 				}
 			}
 			return null;
 		}
 
+
 		private static Gene geneByAlias(String symbol, Search searchResults) throws IOException {
 			for (Hit hit : searchResults.getHits()) {
-				Gene gene = gene(hit.getId());
+				Gene gene = geneByEntrez(hit.getId());
 				if (gene.getAlias() != null) {
 					for (String alias : gene.getAlias()) {
 						if (alias.equals(symbol)) {
@@ -98,20 +127,37 @@ public class MyGene {
 			return null;
 		}
 
-		private static Gene gene(String entrezgene) throws IOException {
-			Gene gene = getGeneByEntrez(entrezgene);
+
+		private static Gene geneByHGNC(String hgncId) throws IOException {
+			Gene gene = getGeneByHGNC(hgncId);
+			if (gene != null) {
+				return gene;
+			}
+			for (Hit hit : query(hgncId).getHits()) {
+				gene = geneByEntrez(hit.getId());
+				if (hgncId.equals(gene.getHGNC())) {
+					save(gene);
+					return gene;
+				}
+			}
+			return null;
+		}
+
+
+		private static Gene geneByEntrez(String entrezGeneId) throws IOException {
+			Gene gene = getGeneByEntrez(entrezGeneId);
 			if (gene == null) {
-				URL url = new URL(String.format(myGeneInfoQuery, entrezgene));
+				URL url = new URL(String.format(myGeneInfoQuery, entrezGeneId));
 				gene = mapper.readValue(HTTP.get(url), Gene.class);
-				save(gene);				
+				save(gene);
 			}
 			return gene;
 		}
 
+
 		private synchronized static void save(Gene gene) {
 			if (gene.getSymbol() != null) {
 				geneBySymbol.put(gene.getSymbol(), gene);
-
 			}
 			if (gene.getAlias() != null) {
 				for (String alias : gene.getAlias()) {
@@ -120,8 +166,14 @@ public class MyGene {
 			}
 			if (gene.getEntrezgene() != null) {
 				geneByEntrez.put(gene.getEntrezgene(), gene);
+				geneByCURIE.put("NCBIgene:" + gene.getEntrezgene(), gene);
+			}
+			if (gene.getHGNC() != null) {
+				geneByHGNC.put(gene.getHGNC(), gene);
+				geneByCURIE.put(gene.getHGNC(), gene);
 			}
 		}
+
 
 		private synchronized static Gene getGeneBySymbol(String symbol) {
 			Gene gene = geneBySymbol.get(symbol);
@@ -130,12 +182,16 @@ public class MyGene {
 			}
 			return gene;
 		}
-		
+
+
 		private synchronized static Gene getGeneByEntrez(String entrezgene) {
 			return geneByEntrez.get(entrezgene);
 		}
-		
-		
+
+
+		private synchronized static Gene getGeneByHGNC(String hgncId) {
+			return geneByHGNC.get(hgncId);
+		}
 	}
 
 	static class Search {
@@ -205,7 +261,7 @@ public class MyGene {
 		}
 
 		public String getHGNC() {
-			return HGNC;
+			return (HGNC == null) ? null : "HGNC:" + HGNC;
 		}
 
 		@JsonProperty("HGNC")
@@ -273,7 +329,7 @@ public class MyGene {
 
 		GeneInfo geneInfo(GeneInfo geneInfo) {
 			if (getHGNC() != null) {
-				geneInfo.setGeneId("HGNC:" + getHGNC());
+				geneInfo.setGeneId(getHGNC());
 			} else if (getEntrezgene() != null) {
 				geneInfo.setGeneId("NCBIgene:" + getEntrezgene());
 			} else if (getEnsembl() != null && getEnsembl().getGene() != null) {
@@ -294,7 +350,7 @@ public class MyGene {
 			}
 			if (getHGNC() != null) {
 				geneInfo.addAttributesItem(
-						new Attribute().name("HGNC").value("HGNC:" + getHGNC()).source("myGene.info"));
+						new Attribute().name(HGNC).value(getHGNC()).source("myGene.info"));
 			}
 			if (getMIM() != null) {
 				geneInfo.addAttributesItem(new Attribute().name("MIM").value("MIM:" + getMIM()).source("myGene.info"));
