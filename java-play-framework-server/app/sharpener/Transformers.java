@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apimodels.GeneList;
 import apimodels.Property;
+import apimodels.Attribute;
 import apimodels.GeneInfo;
 import apimodels.TransformerInfo;
 import apimodels.TransformerQuery;
@@ -26,7 +27,10 @@ public class Transformers {
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	/** Implement /transformers API endpoint
+
+	/**
+	 * Implement /transformers API endpoint
+	 * 
 	 * @return
 	 */
 	public static ArrayList<TransformerInfo> getTransformers() {
@@ -54,14 +58,17 @@ public class Transformers {
 		return transformers;
 	}
 
+
 	private synchronized static void updateMaps(Map<String, TransformerInfo> transformerMap, Map<String, String> urlMap) {
 		Transformers.transformers = transformerMap;
 		Transformers.urls = urlMap;
 	}
 
+
 	private synchronized static String getURL(String transformerName) {
 		return urls.get(transformerName);
 	}
+
 
 	private synchronized static String getFunction(String transformerName) {
 		TransformerInfo transformer = transformers.get(transformerName);
@@ -70,17 +77,21 @@ public class Transformers {
 		}
 		return transformer.getFunction();
 	}
-	
-	/** Implement /transform API endpoint
+
+
+	/**
+	 * Implement /transform API endpoint
+	 * 
 	 * @param query
 	 * @return
 	 */
 	public static GeneList transform(TransformerQuery query) {
-		String baseURL = getURL(query.getName());
+		String transformerName = query.getName();
+		String baseURL = getURL(transformerName);
 		if (baseURL == null) {
-			return GeneLists.error("unknown transformer: '" + query.getName() + "'");
+			return GeneLists.error("unknown transformer: '" + transformerName + "'");
 		}
-		if (GeneLists.getGeneList(query.getGeneListId()) == null && !"producer".equals(getFunction(query.getName()))) {
+		if (GeneLists.getGeneList(query.getGeneListId()) == null && !"producer".equals(getFunction(transformerName))) {
 			return GeneLists.error("gene list " + query.getGeneListId() + " not found");
 		}
 		GeneInfo[] genes = new GeneInfo[0];
@@ -90,11 +101,12 @@ public class Transformers {
 			String res = HTTP.post(url, json);
 			genes = mapper.readValue(res, GeneInfo[].class);
 		} catch (IOException e) {
-			return GeneLists.error(query.getName() + "(" + baseURL + "/transform) failed: " + e.getMessage());
+			return GeneLists.error(transformerName + "(" + baseURL + "/transform) failed: " + e.getMessage());
 		}
 
 		for (GeneInfo gene : genes) {
 			try {
+				addSource(gene, transformerName);
 				MyGene.Info.addInfo(gene);
 			} catch (Exception e) {
 				Logger.warn("failed to obtaing myGene.info attributes for " + gene.getGeneId());
@@ -102,6 +114,16 @@ public class Transformers {
 		}
 		return GeneLists.createList(genes);
 	}
+
+
+	private static void addSource(GeneInfo gene, String source) {
+		for (Attribute attribute : gene.getAttributes()) {
+			if (attribute.getSource() == null) {
+				attribute.setSource(source);
+			}
+		}
+	}
+
 
 	static class Query {
 		private List<GeneInfo> genes = new ArrayList<GeneInfo>();
@@ -116,11 +138,9 @@ public class Transformers {
 			controls = query.getControls();
 		}
 
-
 		public List<GeneInfo> getGenes() {
 			return genes;
 		}
-
 
 		public List<Property> getControls() {
 			return controls;
