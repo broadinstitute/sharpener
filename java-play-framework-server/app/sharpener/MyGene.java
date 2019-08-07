@@ -247,8 +247,8 @@ public class MyGene {
 	static class Gene {
 
 		private String id;
-		private String HGNC;
-		private String MIM;
+		private String hgnc;
+		private String mim;
 		private Object alias;
 		private String[] ensembl;
 		private String entrezgene;
@@ -265,21 +265,21 @@ public class MyGene {
 		}
 
 		public String getHGNC() {
-			return (HGNC == null) ? null : "HGNC:" + HGNC;
+			return (hgnc == null) ? null : "HGNC:" + hgnc;
 		}
 
 		@JsonProperty("HGNC")
 		public void setHGNC(String hGNC) {
-			HGNC = hGNC;
+			this.hgnc = hGNC;
 		}
 
 		public String getMIM() {
-			return MIM;
+			return mim;
 		}
 
 		@JsonProperty("MIM")
 		public void setMIM(String mIM) {
-			MIM = mIM;
+			this.mim = mIM;
 		}
 
 		@SuppressWarnings("unchecked")

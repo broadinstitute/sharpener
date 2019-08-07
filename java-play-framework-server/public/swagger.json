@@ -1,7 +1,7 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "1.0.2",
+    "version" : "1.0.3",
     "title" : "Sharpener API"
   },
   "host" : "indigo.ncats.io",
