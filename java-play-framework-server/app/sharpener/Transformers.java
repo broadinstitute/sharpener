@@ -16,13 +16,22 @@ import apimodels.Property;
 import apimodels.Attribute;
 import apimodels.GeneInfo;
 import apimodels.TransformerInfo;
+import apimodels.TransformerInfo.FunctionEnum;
 import apimodels.TransformerQuery;
 import play.Logger;
 
 public class Transformers {
 
+	private static final FunctionEnum PRODUCER = TransformerInfo.FunctionEnum.PRODUCER;
+
+	/**
+	 * Maps transformer's URL to TransformerInfo object
+	 */
 	private static Map<String, TransformerInfo> transformers;
 
+	/**
+	 * Maps transformer's name to transformer's URL 
+	 */
 	private static Map<String, String> urls = new HashMap<>();
 
 	private static ObjectMapper mapper = new ObjectMapper();
@@ -35,19 +44,29 @@ public class Transformers {
 	 */
 	public static ArrayList<TransformerInfo> getTransformers() {
 		ArrayList<TransformerInfo> transformers = new ArrayList<TransformerInfo>();
-		Map<String, TransformerInfo> transformerMap = new HashMap<String, TransformerInfo>();
-		Map<String, String> urlMap = new HashMap<String, String>();
+		Map<String,TransformerInfo> transformerMap = new HashMap<String,TransformerInfo>();
+		Map<String,String> urlMap = new HashMap<String,String>();
 		try {
 			BufferedReader transformerFile = new BufferedReader(new FileReader("transformers.txt"));
-			for (String line = transformerFile.readLine(); line != null; line = transformerFile.readLine()) {
+			for (String baseURL = transformerFile.readLine(); baseURL != null; baseURL = transformerFile.readLine()) {
+				TransformerInfo info = null;
 				try {
-					URL url = new URL(line + "/transformer_info");
-					TransformerInfo info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
-					transformers.add(info);
-					urlMap.put(info.getName(), line);
-					transformerMap.put(info.getName(), info);
+					URL url = new URL(baseURL + "/transformer_info");
+					info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
+					info.setStatus(TransformerInfo.StatusEnum.ONLINE);
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+				if (info == null) {
+					info = Transformers.transformers.get(baseURL);
+					if (info != null) {
+						info.setStatus(TransformerInfo.StatusEnum.OFFLINE);
+					}
+				}
+				if (info != null) {
+					transformers.add(info);
+					urlMap.put(info.getName(), baseURL);
+					transformerMap.put(baseURL, info);
 				}
 			}
 			transformerFile.close();
@@ -70,7 +89,7 @@ public class Transformers {
 	}
 
 
-	private synchronized static String getFunction(String transformerName) {
+	private synchronized static TransformerInfo.FunctionEnum getFunction(String transformerName) {
 		TransformerInfo transformer = transformers.get(transformerName);
 		if (transformer == null) {
 			return null;
@@ -91,7 +110,7 @@ public class Transformers {
 		if (baseURL == null) {
 			return GeneLists.error("unknown transformer: '" + transformerName + "'");
 		}
-		if (GeneLists.getGeneList(query.getGeneListId()) == null && !"producer".equals(getFunction(transformerName))) {
+		if (GeneLists.getGeneList(query.getGeneListId()) == null && !PRODUCER.equals(getFunction(transformerName))) {
 			return GeneLists.error("gene list " + query.getGeneListId() + " not found");
 		}
 		GeneInfo[] genes = new GeneInfo[0];
