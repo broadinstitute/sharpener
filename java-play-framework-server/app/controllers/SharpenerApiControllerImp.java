@@ -30,8 +30,7 @@ public class SharpenerApiControllerImp implements SharpenerApiControllerImpInter
 
     @Override
     public GeneList geneListGeneListIdGet(String geneListId) throws Exception {
-        //Do your magic!!!
-        return new GeneList();
+    	return GeneLists.getGeneList(geneListId);
     }
 
     @Override

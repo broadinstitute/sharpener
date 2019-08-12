@@ -111,7 +111,7 @@ public class Transformers {
 		if (baseURL == null) {
 			return GeneLists.error("unknown transformer: '" + transformerName + "'", transformerName);
 		}
-		if (GeneLists.getGeneList(query.getGeneListId()) == null && !PRODUCER.equals(getFunction(baseURL))) {
+		if (GeneLists.findGeneList(query.getGeneListId()) == null && !PRODUCER.equals(getFunction(baseURL))) {
 			return GeneLists.error("gene list " + query.getGeneListId() + " not found", transformerName);
 		}
 		GeneInfo[] genes = new GeneInfo[0];
@@ -156,7 +156,7 @@ public class Transformers {
 
 
 		Query(TransformerQuery query) {
-			GeneList geneList = GeneLists.getGeneList(query.getGeneListId());
+			GeneList geneList = GeneLists.findGeneList(query.getGeneListId());
 			if (geneList != null) {
 				genes = geneList.getGenes();
 			}

@@ -70,6 +70,21 @@ public class GeneLists {
 	}
 
 
+	/**
+	 * Implements /gene_list endpoint
+	 * 
+	 * @param geneListId
+	 * @return Gene list with a given id
+	 */
+	public static GeneList getGeneList(String geneListId) {
+		GeneList geneList = findGeneList(geneListId);
+		if (geneList != null) {
+			return geneList;
+		}
+		return error("gene list " + geneListId + " not found", "/gene_list");
+	}
+
+
 	private static GeneList union(List<String> geneListIds) {
 		if (geneListIds == null || geneListIds.size() == 0) {
 			return error("empty gene-list collection", "Gene-list union");
@@ -77,7 +92,7 @@ public class GeneLists {
 		HashMap<String,GeneInfo> genes = new HashMap<String,GeneInfo>();
 		GeneList geneList = new GeneList().source("Gene-list union");
 		for (String geneListId : geneListIds) {
-			GeneList source = getGeneList(geneListId);
+			GeneList source = findGeneList(geneListId);
 			if (source == null) {
 				return error("gene list " + geneListId + " not found", "Gene-list union");
 			}
@@ -100,7 +115,7 @@ public class GeneLists {
 		if (geneListIds == null || geneListIds.size() == 0) {
 			return error("empty gene-list collection", "Gene-list intersection");
 		}
-		GeneList source = getGeneList(geneListIds.get(0));
+		GeneList source = findGeneList(geneListIds.get(0));
 		if (source == null) {
 			return error("gene list " + geneListIds.get(0) + " not found", "Gene-list intersection");
 		}
@@ -109,7 +124,7 @@ public class GeneLists {
 			intersection.put(gene.getGeneId(), new GeneInfo().geneId(gene.getGeneId()));
 		}
 		for (String geneListId : geneListIds) {
-			source = getGeneList(geneListId);
+			source = findGeneList(geneListId);
 			if (source == null) {
 				return error("gene list " + geneListId + " not found", "Gene-list intersection");
 			}
@@ -158,7 +173,7 @@ public class GeneLists {
 	}
 
 
-	synchronized static GeneList getGeneList(String geneListId) {
+	synchronized static GeneList findGeneList(String geneListId) {
 		return geneLists.get(geneListId);
 	}
 
