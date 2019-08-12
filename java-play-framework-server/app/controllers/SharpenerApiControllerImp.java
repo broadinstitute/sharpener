@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.FileInputStream;
 import javax.validation.constraints.*;
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 public class SharpenerApiControllerImp implements SharpenerApiControllerImpInterface {
     @Override
@@ -23,6 +23,12 @@ public class SharpenerApiControllerImp implements SharpenerApiControllerImpInter
 
     @Override
     public GeneList createGeneListPost(List<String> query) throws Exception {
+        //Do your magic!!!
+        return new GeneList();
+    }
+
+    @Override
+    public GeneList geneListGeneListIdGet(String geneListId) throws Exception {
         //Do your magic!!!
         return new GeneList();
     }

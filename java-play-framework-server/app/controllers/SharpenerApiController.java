@@ -24,7 +24,7 @@ import play.Configuration;
 
 import swagger.SwaggerUtils.ApiAction;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 public class SharpenerApiController extends Controller {
 
@@ -75,6 +75,16 @@ public class SharpenerApiController extends Controller {
             throw new IllegalArgumentException("'query' parameter is required");
         }
         GeneList obj = imp.createGeneListPost(query);
+        if (configuration.getBoolean("useOutputBeanValidation")) {
+            SwaggerUtils.validate(obj);
+        }
+        JsonNode result = mapper.valueToTree(obj);
+        return ok(result);
+    }
+
+    @ApiAction
+    public Result geneListGeneListIdGet(String geneListId) throws Exception {
+        GeneList obj = imp.geneListGeneListIdGet(geneListId);
         if (configuration.getBoolean("useOutputBeanValidation")) {
             SwaggerUtils.validate(obj);
         }

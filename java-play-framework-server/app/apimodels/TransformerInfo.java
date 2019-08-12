@@ -9,20 +9,93 @@ import javax.validation.*;
 import java.util.Objects;
 import javax.validation.constraints.*;
 /**
- * TransformerInfo
+ * Definition of the transformer.
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class TransformerInfo   {
   @JsonProperty("name")
   private String name = null;
 
+  /**
+   * Status of the transformer, one of 'online', 'offline'.
+   */
+  public enum StatusEnum {
+    ONLINE("online"),
+    
+    OFFLINE("offline");
+
+    private final String value;
+
+    StatusEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    @JsonValue
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static StatusEnum fromValue(String text) {
+      for (StatusEnum b : StatusEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
+  @JsonProperty("status")
+  private StatusEnum status = null;
+
+  /**
+   * Function of the transfomer, one of 'producer', 'expander', 'filter'.
+   */
+  public enum FunctionEnum {
+    PRODUCER("producer"),
+    
+    EXPANDER("expander"),
+    
+    FILTER("filter");
+
+    private final String value;
+
+    FunctionEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    @JsonValue
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static FunctionEnum fromValue(String text) {
+      for (FunctionEnum b : FunctionEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
   @JsonProperty("function")
-  private String function = null;
+  private FunctionEnum function = null;
+
+  @JsonProperty("description")
+  private String description = null;
 
   @JsonProperty("parameters")
   private List<Parameter> parameters = null;
+
+  @JsonProperty("required_attributes")
+  private List<String> requiredAttributes = null;
 
   public TransformerInfo name(String name) {
     this.name = name;
@@ -30,10 +103,11 @@ public class TransformerInfo   {
   }
 
    /**
-   * Get name
+   * Name of the transformer.
    * @return name
   **/
-    public String getName() {
+  @NotNull
+  public String getName() {
     return name;
   }
 
@@ -41,21 +115,57 @@ public class TransformerInfo   {
     this.name = name;
   }
 
-  public TransformerInfo function(String function) {
+  public TransformerInfo status(StatusEnum status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Status of the transformer, one of 'online', 'offline'.
+   * @return status
+  **/
+  @NotNull
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
+  }
+
+  public TransformerInfo function(FunctionEnum function) {
     this.function = function;
     return this;
   }
 
    /**
-   * Get function
+   * Function of the transfomer, one of 'producer', 'expander', 'filter'.
    * @return function
   **/
-    public String getFunction() {
+  @NotNull
+  public FunctionEnum getFunction() {
     return function;
   }
 
-  public void setFunction(String function) {
+  public void setFunction(FunctionEnum function) {
     this.function = function;
+  }
+
+  public TransformerInfo description(String description) {
+    this.description = description;
+    return this;
+  }
+
+   /**
+   * Description of the transformer.
+   * @return description
+  **/
+    public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public TransformerInfo parameters(List<Parameter> parameters) {
@@ -72,7 +182,7 @@ public class TransformerInfo   {
   }
 
    /**
-   * Get parameters
+   * Parameters used to control the transformer.
    * @return parameters
   **/
   @Valid
@@ -82,6 +192,31 @@ public class TransformerInfo   {
 
   public void setParameters(List<Parameter> parameters) {
     this.parameters = parameters;
+  }
+
+  public TransformerInfo requiredAttributes(List<String> requiredAttributes) {
+    this.requiredAttributes = requiredAttributes;
+    return this;
+  }
+
+  public TransformerInfo addRequiredAttributesItem(String requiredAttributesItem) {
+    if (requiredAttributes == null) {
+      requiredAttributes = new ArrayList<>();
+    }
+    requiredAttributes.add(requiredAttributesItem);
+    return this;
+  }
+
+   /**
+   * Gene attributes required by the transformer.
+   * @return requiredAttributes
+  **/
+    public List<String> getRequiredAttributes() {
+    return requiredAttributes;
+  }
+
+  public void setRequiredAttributes(List<String> requiredAttributes) {
+    this.requiredAttributes = requiredAttributes;
   }
 
 
@@ -95,13 +230,16 @@ public class TransformerInfo   {
     }
     TransformerInfo transformerInfo = (TransformerInfo) o;
     return Objects.equals(name, transformerInfo.name) &&
+        Objects.equals(status, transformerInfo.status) &&
         Objects.equals(function, transformerInfo.function) &&
-        Objects.equals(parameters, transformerInfo.parameters);
+        Objects.equals(description, transformerInfo.description) &&
+        Objects.equals(parameters, transformerInfo.parameters) &&
+        Objects.equals(requiredAttributes, transformerInfo.requiredAttributes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, function, parameters);
+    return Objects.hash(name, status, function, description, parameters, requiredAttributes);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -111,8 +249,11 @@ public class TransformerInfo   {
     sb.append("class TransformerInfo {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    function: ").append(toIndentedString(function)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    requiredAttributes: ").append(toIndentedString(requiredAttributes)).append("\n");
     sb.append("}");
     return sb.toString();
   }
