@@ -120,9 +120,9 @@ java-play-framework-server/.settings
 java-play-framework-server/.project
 java-play-framework-server/.classpath
 java-play-framework-server/.cache-main
+java-play-framework-server/bin
 
 #sbt-generated files
 java-play-framework-server/target/
 java-play-framework-server/project/target/
 java-play-framework-server/project/project/target/
-

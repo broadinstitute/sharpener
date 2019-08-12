@@ -19,6 +19,8 @@ public interface SharpenerApiControllerImpInterface {
 
     GeneList createGeneListPost(List<String> query) throws Exception;
 
+    GeneList geneListGeneListIdGet(String geneListId) throws Exception;
+
     GeneList transformPost(TransformerQuery query) throws Exception;
 
     List<TransformerInfo> transformersGet() throws Exception;

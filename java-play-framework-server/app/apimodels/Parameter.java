@@ -10,15 +10,50 @@ import javax.validation.constraints.*;
 /**
  * Parameter
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Parameter   {
   @JsonProperty("name")
   private String name = null;
 
+  /**
+   * Type of the parameter, one of 'Boolean', 'int', 'double', 'string'.
+   */
+  public enum TypeEnum {
+    BOOLEAN("Boolean"),
+    
+    INT("int"),
+    
+    DOUBLE("double"),
+    
+    STRING("string");
+
+    private final String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    @JsonValue
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TypeEnum fromValue(String text) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
   @JsonProperty("type")
-  private String type = null;
+  private TypeEnum type = null;
 
   @JsonProperty("default")
   private String _default = null;
@@ -32,10 +67,11 @@ public class Parameter   {
   }
 
    /**
-   * Get name
+   * Name of the parameter.
    * @return name
   **/
-    public String getName() {
+  @NotNull
+  public String getName() {
     return name;
   }
 
@@ -43,20 +79,21 @@ public class Parameter   {
     this.name = name;
   }
 
-  public Parameter type(String type) {
+  public Parameter type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
    /**
-   * type of a parameter, one of Boolean, int, double, string
+   * Type of the parameter, one of 'Boolean', 'int', 'double', 'string'.
    * @return type
   **/
-    public String getType() {
+  @NotNull
+  public TypeEnum getType() {
     return type;
   }
 
-  public void setType(String type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
@@ -66,10 +103,11 @@ public class Parameter   {
   }
 
    /**
-   * Get _default
+   * Default value of the parameter.
    * @return _default
   **/
-    public String getDefault() {
+  @NotNull
+  public String getDefault() {
     return _default;
   }
 
@@ -91,7 +129,7 @@ public class Parameter   {
   }
 
    /**
-   * Get allowedValues
+   * Allowed values for the parameter.
    * @return allowedValues
   **/
     public List<String> getAllowedValues() {
