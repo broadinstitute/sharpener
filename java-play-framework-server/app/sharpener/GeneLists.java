@@ -1,5 +1,6 @@
 package sharpener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class GeneLists {
 	 */
 	public static GeneList createList(List<String> genes) {
 		GeneList geneList = new GeneList();
+		geneList.source("user input").attributes(new ArrayList<Attribute>());
 		for (String symbol : genes)
 			try {
 				GeneInfo geneInfo = MyGene.Info.querySymbol(symbol);
@@ -63,21 +65,21 @@ public class GeneLists {
 		} else if (query.getOperation().equals("intersection")) {
 			return intersection(query.getGeneListIds());
 		} else {
-			return error("unknown aggregation operation");
+			return error("unknown aggregation operation", "/aggregate");
 		}
 	}
 
 
 	private static GeneList union(List<String> geneListIds) {
 		if (geneListIds == null || geneListIds.size() == 0) {
-			return error("empty gene-list collection");
+			return error("empty gene-list collection", "Gene-list union");
 		}
 		HashMap<String,GeneInfo> genes = new HashMap<String,GeneInfo>();
-		GeneList geneList = new GeneList();
+		GeneList geneList = new GeneList().source("Gene-list union");
 		for (String geneListId : geneListIds) {
 			GeneList source = getGeneList(geneListId);
 			if (source == null) {
-				return error("gene list " + geneListId + " not found");
+				return error("gene list " + geneListId + " not found", "Gene-list union");
 			}
 			for (GeneInfo gene : source.getGenes()) {
 				String geneId = gene.getGeneId();
@@ -96,11 +98,11 @@ public class GeneLists {
 
 	private static GeneList intersection(List<String> geneListIds) {
 		if (geneListIds == null || geneListIds.size() == 0) {
-			return error("empty gene-list collection");
+			return error("empty gene-list collection", "Gene-list intersection");
 		}
 		GeneList source = getGeneList(geneListIds.get(0));
 		if (source == null) {
-			return error("gene list " + geneListIds.get(0) + " not found");
+			return error("gene list " + geneListIds.get(0) + " not found", "Gene-list intersection");
 		}
 		HashMap<String,GeneInfo> intersection = new HashMap<String,GeneInfo>();
 		for (GeneInfo gene : source.getGenes()) {
@@ -109,7 +111,7 @@ public class GeneLists {
 		for (String geneListId : geneListIds) {
 			source = getGeneList(geneListId);
 			if (source == null) {
-				return error("gene list " + geneListId + " not found");
+				return error("gene list " + geneListId + " not found", "Gene-list intersection");
 			}
 			HashMap<String,GeneInfo> newIntersection = new HashMap<String,GeneInfo>();
 			for (GeneInfo gene : source.getGenes()) {
@@ -121,7 +123,7 @@ public class GeneLists {
 			}
 			intersection = newIntersection;
 		}
-		GeneList geneList = new GeneList();
+		GeneList geneList = new GeneList().source("Gene-list intersection");
 		for (GeneInfo gene : intersection.values()) {
 			geneList.addGenesItem(gene);
 		}
@@ -187,9 +189,11 @@ public class GeneLists {
 	 * @param message error message
 	 * @return instance of GeneList containing no genes and the error message as an id
 	 */
-	static GeneList error(String message) {
+	static GeneList error(String message, String source) {
 		GeneList errorList = new GeneList();
-		errorList.geneListId("Error: " + message);
+		errorList.geneListId("Error");
+		errorList.source(source);
+		errorList.addAttributesItem(new Attribute().name("error").source(source).value(message));
 		return errorList;
 	}
 }

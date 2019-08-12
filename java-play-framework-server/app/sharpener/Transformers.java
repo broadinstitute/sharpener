@@ -16,13 +16,14 @@ import apimodels.Property;
 import apimodels.Attribute;
 import apimodels.GeneInfo;
 import apimodels.TransformerInfo;
-import apimodels.TransformerInfo.FunctionEnum;
 import apimodels.TransformerQuery;
 import play.Logger;
 
 public class Transformers {
 
-	private static final FunctionEnum PRODUCER = TransformerInfo.FunctionEnum.PRODUCER;
+	private static final TransformerInfo.FunctionEnum PRODUCER = TransformerInfo.FunctionEnum.PRODUCER;
+	private static final TransformerInfo.StatusEnum ONLINE = TransformerInfo.StatusEnum.ONLINE;
+	private static final TransformerInfo.StatusEnum OFFLINE = TransformerInfo.StatusEnum.OFFLINE;
 
 	/**
 	 * Maps transformer's URL to TransformerInfo object
@@ -53,14 +54,14 @@ public class Transformers {
 				try {
 					URL url = new URL(baseURL + "/transformer_info");
 					info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
-					info.setStatus(TransformerInfo.StatusEnum.ONLINE);
+					info.setStatus(ONLINE);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				if (info == null) {
 					info = Transformers.transformers.get(baseURL);
 					if (info != null) {
-						info.setStatus(TransformerInfo.StatusEnum.OFFLINE);
+						info.setStatus(OFFLINE);
 					}
 				}
 				if (info != null) {
@@ -89,8 +90,8 @@ public class Transformers {
 	}
 
 
-	private synchronized static TransformerInfo.FunctionEnum getFunction(String transformerName) {
-		TransformerInfo transformer = transformers.get(transformerName);
+	private synchronized static TransformerInfo.FunctionEnum getFunction(String baseURL) {
+		TransformerInfo transformer = transformers.get(baseURL);
 		if (transformer == null) {
 			return null;
 		}
@@ -108,10 +109,10 @@ public class Transformers {
 		String transformerName = query.getName();
 		String baseURL = getURL(transformerName);
 		if (baseURL == null) {
-			return GeneLists.error("unknown transformer: '" + transformerName + "'");
+			return GeneLists.error("unknown transformer: '" + transformerName + "'", transformerName);
 		}
-		if (GeneLists.getGeneList(query.getGeneListId()) == null && !PRODUCER.equals(getFunction(transformerName))) {
-			return GeneLists.error("gene list " + query.getGeneListId() + " not found");
+		if (GeneLists.getGeneList(query.getGeneListId()) == null && !PRODUCER.equals(getFunction(baseURL))) {
+			return GeneLists.error("gene list " + query.getGeneListId() + " not found", transformerName);
 		}
 		GeneInfo[] genes = new GeneInfo[0];
 		try {
@@ -120,7 +121,7 @@ public class Transformers {
 			String res = HTTP.post(url, json);
 			genes = mapper.readValue(res, GeneInfo[].class);
 		} catch (IOException e) {
-			return GeneLists.error(transformerName + "(" + baseURL + "/transform) failed: " + e.getMessage());
+			return GeneLists.error(transformerName + "(" + baseURL + "/transform) failed: " + e.getMessage(), transformerName);
 		}
 
 		for (GeneInfo gene : genes) {
@@ -131,7 +132,12 @@ public class Transformers {
 				Logger.warn("failed to obtaing myGene.info attributes for " + gene.getGeneId());
 			}
 		}
-		return GeneLists.createList(genes);
+		GeneList geneList = GeneLists.createList(genes);
+		geneList.setSource(transformerName);
+		for (Property property : query.getControls()) {
+			geneList.addAttributesItem(new Attribute().name(property.getName()).source(transformerName).value(property.getValue()));
+		}
+		return geneList;
 	}
 
 
