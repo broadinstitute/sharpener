@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 /**
  * Property
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Property   {
@@ -27,7 +27,8 @@ public class Property   {
    * Get name
    * @return name
   **/
-    public String getName() {
+  @NotNull
+  public String getName() {
     return name;
   }
 
@@ -44,7 +45,8 @@ public class Property   {
    * Get value
    * @return value
   **/
-    public String getValue() {
+  @NotNull
+  public String getValue() {
     return value;
   }
 

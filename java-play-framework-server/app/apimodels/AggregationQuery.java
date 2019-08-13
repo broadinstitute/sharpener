@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 /**
  * AggregationQuery
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class AggregationQuery   {
@@ -18,7 +18,7 @@ public class AggregationQuery   {
   private String operation = null;
 
   @JsonProperty("gene_list_ids")
-  private List<String> geneListIds = null;
+  private List<String> geneListIds = new ArrayList<>();
 
   public AggregationQuery operation(String operation) {
     this.operation = operation;
@@ -26,10 +26,11 @@ public class AggregationQuery   {
   }
 
    /**
-   * Get operation
+   * Gene-list aggregation operation, one of 'union', 'intersection'.
    * @return operation
   **/
-    public String getOperation() {
+  @NotNull
+  public String getOperation() {
     return operation;
   }
 
@@ -43,18 +44,16 @@ public class AggregationQuery   {
   }
 
   public AggregationQuery addGeneListIdsItem(String geneListIdsItem) {
-    if (geneListIds == null) {
-      geneListIds = new ArrayList<>();
-    }
     geneListIds.add(geneListIdsItem);
     return this;
   }
 
    /**
-   * Get geneListIds
+   * Ids of the gene lists to be aggreagted.
    * @return geneListIds
   **/
-    public List<String> getGeneListIds() {
+  @NotNull
+  public List<String> getGeneListIds() {
     return geneListIds;
   }
 

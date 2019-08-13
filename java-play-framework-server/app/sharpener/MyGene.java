@@ -3,6 +3,7 @@ package sharpener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apimodels.Attribute;
 import apimodels.GeneInfo;
+import apimodels.GeneInfoIdentifiers;
 import play.Logger;
 
 public class MyGene {
@@ -37,17 +39,22 @@ public class MyGene {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
 
+
 		static GeneInfo addInfo(GeneInfo src) {
 			String hgncId = null;
 			String entrezGeneId = null;
+			if (src.getIdentifiers() != null) {
+				hgncId = src.getIdentifiers().getHgnc();
+				entrezGeneId = src.getIdentifiers().getEntrez();
+			}
 			for (Attribute attribute : src.getAttributes()) {
 				if (MY_GENE_INFO_ID.equals(attribute.getName())) {
 					return src;
 				}
-				if (ENTREZ_GENE_ID.equals(attribute.getName())) {
+				if (entrezGeneId == null && ENTREZ_GENE_ID.equals(attribute.getName())) {
 					entrezGeneId = attribute.getValue();
 				}
-				if (HGNC.equals(attribute.getName())) {
+				if (hgncId == null && HGNC.equals(attribute.getName())) {
 					hgncId = attribute.getValue();
 				}
 			}
@@ -60,7 +67,7 @@ public class MyGene {
 					return gene.geneInfo(src);
 				} catch (IOException e) {
 					e.printStackTrace();
-				}				
+				}
 			}
 			if (entrezGeneId != null) {
 				try {
@@ -356,6 +363,23 @@ public class MyGene {
 			this.symbol = symbol;
 		}
 
+
+		private void addIdentifiers(GeneInfoIdentifiers identifiers) {
+			if (identifiers.getEntrez() == null && getEntrezgene() != null) {
+				identifiers.setEntrez("NCBIgene:" + getEntrezgene());
+			}
+			if (identifiers.getHgnc() == null && getHGNC() != null) {
+				identifiers.setHgnc(getHGNC());
+			}
+			if (identifiers.getMim() == null && getMIM() != null) {
+				identifiers.setMim("MIM:" + getMIM());
+			}
+			if (identifiers.getEnsembl() == null && getEnsembl() != null && getEnsembl().length > 0) {
+				identifiers.setEnsembl(Arrays.asList(getEnsembl()));
+			}
+		}
+
+
 		GeneInfo geneInfo(GeneInfo geneInfo) {
 			if (getHGNC() != null) {
 				geneInfo.setGeneId(getHGNC());
@@ -395,6 +419,10 @@ public class MyGene {
 			if (getName() != null) {
 				geneInfo.addAttributesItem(new Attribute().name("gene_name").value(getName()).source("myGene.info"));
 			}
+			if (geneInfo.getIdentifiers() == null) {
+				geneInfo.setIdentifiers(new GeneInfoIdentifiers());
+			}
+			addIdentifiers(geneInfo.getIdentifiers());
 			return geneInfo;
 		}
 	}

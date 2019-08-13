@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 /**
  * TransformerQuery
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class TransformerQuery   {
@@ -22,7 +22,7 @@ public class TransformerQuery   {
   private String geneListId = null;
 
   @JsonProperty("controls")
-  private List<Property> controls = null;
+  private List<Property> controls = new ArrayList<>();
 
   public TransformerQuery name(String name) {
     this.name = name;
@@ -30,10 +30,11 @@ public class TransformerQuery   {
   }
 
    /**
-   * Get name
+   * Name of the transformer that will be executed.
    * @return name
   **/
-    public String getName() {
+  @NotNull
+  public String getName() {
     return name;
   }
 
@@ -47,7 +48,7 @@ public class TransformerQuery   {
   }
 
    /**
-   * Get geneListId
+   * Id of the gene list that will be transformed. Required for expanders and filters;  should be ommited for producers.
    * @return geneListId
   **/
     public String getGeneListId() {
@@ -64,18 +65,16 @@ public class TransformerQuery   {
   }
 
   public TransformerQuery addControlsItem(Property controlsItem) {
-    if (controls == null) {
-      controls = new ArrayList<>();
-    }
     controls.add(controlsItem);
     return this;
   }
 
    /**
-   * Get controls
+   * Values that control the behavior of the transformer. Names of the controls must match the names specified in the transformer's definition and values must match types (and possibly  allowed_values) specified in the transformer's definition.
    * @return controls
   **/
-  @Valid
+  @NotNull
+@Valid
   public List<Property> getControls() {
     return controls;
   }

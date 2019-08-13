@@ -1,5 +1,6 @@
 package apimodels;
 
+import apimodels.Attribute;
 import apimodels.GeneInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +12,21 @@ import javax.validation.constraints.*;
 /**
  * GeneList
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-07-11T16:00:13.997Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class GeneList   {
   @JsonProperty("gene_list_id")
   private String geneListId = null;
 
+  @JsonProperty("source")
+  private String source = null;
+
+  @JsonProperty("attributes")
+  private List<Attribute> attributes = null;
+
   @JsonProperty("genes")
-  private List<GeneInfo> genes = null;
+  private List<GeneInfo> genes = new ArrayList<>();
 
   public GeneList geneListId(String geneListId) {
     this.geneListId = geneListId;
@@ -27,15 +34,60 @@ public class GeneList   {
   }
 
    /**
-   * Get geneListId
+   * Id of the gene list.
    * @return geneListId
   **/
-    public String getGeneListId() {
+  @NotNull
+  public String getGeneListId() {
     return geneListId;
   }
 
   public void setGeneListId(String geneListId) {
     this.geneListId = geneListId;
+  }
+
+  public GeneList source(String source) {
+    this.source = source;
+    return this;
+  }
+
+   /**
+   * Transformer that produced the gene list.
+   * @return source
+  **/
+  @NotNull
+  public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
+
+  public GeneList attributes(List<Attribute> attributes) {
+    this.attributes = attributes;
+    return this;
+  }
+
+  public GeneList addAttributesItem(Attribute attributesItem) {
+    if (attributes == null) {
+      attributes = new ArrayList<>();
+    }
+    attributes.add(attributesItem);
+    return this;
+  }
+
+   /**
+   * Additional information and provenance about the gene list.
+   * @return attributes
+  **/
+  @Valid
+  public List<Attribute> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(List<Attribute> attributes) {
+    this.attributes = attributes;
   }
 
   public GeneList genes(List<GeneInfo> genes) {
@@ -44,18 +96,16 @@ public class GeneList   {
   }
 
   public GeneList addGenesItem(GeneInfo genesItem) {
-    if (genes == null) {
-      genes = new ArrayList<>();
-    }
     genes.add(genesItem);
     return this;
   }
 
    /**
-   * Get genes
+   * Members of the gene list.
    * @return genes
   **/
-  @Valid
+  @NotNull
+@Valid
   public List<GeneInfo> getGenes() {
     return genes;
   }
@@ -75,12 +125,14 @@ public class GeneList   {
     }
     GeneList geneList = (GeneList) o;
     return Objects.equals(geneListId, geneList.geneListId) &&
+        Objects.equals(source, geneList.source) &&
+        Objects.equals(attributes, geneList.attributes) &&
         Objects.equals(genes, geneList.genes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(geneListId, genes);
+    return Objects.hash(geneListId, source, attributes, genes);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -90,6 +142,8 @@ public class GeneList   {
     sb.append("class GeneList {\n");
     
     sb.append("    geneListId: ").append(toIndentedString(geneListId)).append("\n");
+    sb.append("    source: ").append(toIndentedString(source)).append("\n");
+    sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
     sb.append("    genes: ").append(toIndentedString(genes)).append("\n");
     sb.append("}");
     return sb.toString();
