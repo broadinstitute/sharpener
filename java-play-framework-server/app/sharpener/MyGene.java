@@ -23,7 +23,8 @@ public class MyGene {
 	private static final String MY_GENE_INFO_ID = "myGene.info id";
 	private static final String ENTREZ_GENE_ID = "entrez_gene_id";
 	private static final String HGNC = "HGNC";
-
+	private static final String NCBI_GENE = "NCBIgene:";
+	
 	static class Info {
 
 		private static ObjectMapper mapper = new ObjectMapper();
@@ -153,6 +154,9 @@ public class MyGene {
 
 
 		private static Gene geneByEntrez(String entrezGeneId) throws IOException {
+			if (entrezGeneId.startsWith(NCBI_GENE)) {
+				entrezGeneId = entrezGeneId.substring(NCBI_GENE.length());
+			}
 			Gene gene = getGeneByEntrez(entrezGeneId);
 			if (gene == null) {
 				URL url = new URL(String.format(myGeneInfoQuery, entrezGeneId));
@@ -174,7 +178,7 @@ public class MyGene {
 			}
 			if (gene.getEntrezgene() != null) {
 				geneByEntrez.put(gene.getEntrezgene(), gene);
-				geneByCURIE.put("NCBIgene:" + gene.getEntrezgene(), gene);
+				geneByCURIE.put(NCBI_GENE + gene.getEntrezgene(), gene);
 			}
 			if (gene.getHGNC() != null) {
 				geneByHGNC.put(gene.getHGNC(), gene);
@@ -363,10 +367,9 @@ public class MyGene {
 			this.symbol = symbol;
 		}
 
-
 		private void addIdentifiers(GeneInfoIdentifiers identifiers) {
 			if (identifiers.getEntrez() == null && getEntrezgene() != null) {
-				identifiers.setEntrez("NCBIgene:" + getEntrezgene());
+				identifiers.setEntrez(NCBI_GENE + getEntrezgene());
 			}
 			if (identifiers.getHgnc() == null && getHGNC() != null) {
 				identifiers.setHgnc(getHGNC());
@@ -375,16 +378,19 @@ public class MyGene {
 				identifiers.setMim("MIM:" + getMIM());
 			}
 			if (identifiers.getEnsembl() == null && getEnsembl() != null && getEnsembl().length > 0) {
-				identifiers.setEnsembl(Arrays.asList(getEnsembl()));
+				ArrayList<String> ensembl = new ArrayList<>();
+				for (String ensemblGeneId : getEnsembl()) {
+					ensembl.add("ENSEMBL:" + ensemblGeneId);
+				}
+				identifiers.setEnsembl(ensembl);
 			}
 		}
-
 
 		GeneInfo geneInfo(GeneInfo geneInfo) {
 			if (getHGNC() != null) {
 				geneInfo.setGeneId(getHGNC());
 			} else if (getEntrezgene() != null) {
-				geneInfo.setGeneId("NCBIgene:" + getEntrezgene());
+				geneInfo.setGeneId(NCBI_GENE + getEntrezgene());
 			} else if (getEnsembl() != null && getEnsembl().length > 0) {
 				geneInfo.setGeneId(getEnsembl()[0]);
 			} else {
