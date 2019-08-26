@@ -12,7 +12,7 @@ import javax.validation.constraints.*;
 /**
  * GeneList
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-12T19:29:34.374Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-26T20:10:20.079Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class GeneList   {

@@ -194,7 +194,7 @@
         "genes" : [ {
           "identifiers" : {
             "mim" : "MIM:608958",
-            "entrez" : "NCBIgene:100",
+            "entrez" : "NCBIGene:100",
             "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
             "hgnc" : "HGNC:186"
           },
@@ -211,7 +211,7 @@
         }, {
           "identifiers" : {
             "mim" : "MIM:608958",
-            "entrez" : "NCBIgene:100",
+            "entrez" : "NCBIGene:100",
             "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
             "hgnc" : "HGNC:186"
           },
@@ -261,7 +261,7 @@
       "example" : {
         "identifiers" : {
           "mim" : "MIM:608958",
-          "entrez" : "NCBIgene:100",
+          "entrez" : "NCBIGene:100",
           "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
           "hgnc" : "HGNC:186"
         },
@@ -420,7 +420,7 @@
       "properties" : {
         "entrez" : {
           "type" : "string",
-          "example" : "NCBIgene:100",
+          "example" : "NCBIGene:100",
           "description" : "Entrez gene id (CURIE)."
         },
         "hgnc" : {
@@ -444,7 +444,7 @@
       },
       "example" : {
         "mim" : "MIM:608958",
-        "entrez" : "NCBIgene:100",
+        "entrez" : "NCBIGene:100",
         "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
         "hgnc" : "HGNC:186"
       }
