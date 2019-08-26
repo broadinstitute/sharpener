@@ -173,7 +173,7 @@ definitions:
           entrez:
             type: string
             description: Entrez gene id (CURIE).
-            example: 'NCBIgene:100'
+            example: 'NCBIGene:100'
           hgnc:
             type: string
             description: HGNC gene id (CURIE).
