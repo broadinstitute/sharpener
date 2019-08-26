@@ -3,7 +3,6 @@ package sharpener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ public class MyGene {
 	private static final String MY_GENE_INFO_ID = "myGene.info id";
 	private static final String ENTREZ_GENE_ID = "entrez_gene_id";
 	private static final String HGNC = "HGNC";
-	private static final String NCBI_GENE = "NCBIgene:";
+	private static final String NCBI_GENE = "NCBIGene:";
 	
 	static class Info {
 
