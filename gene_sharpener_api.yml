@@ -1,10 +1,10 @@
 swagger: '2.0'
 info:
   title: Sharpener API
-  version: 1.1.0
+  version: 1.1.1
 
-host: indigo.ncats.io
-basePath: /sharpener
+host: sharpener.ncats.io
+basePath: /api
 schemes:
 - "https"
 
@@ -173,7 +173,7 @@ definitions:
           entrez:
             type: string
             description: Entrez gene id (CURIE).
-            example: 'NCBIgene:100'
+            example: 'NCBIGene:100'
           hgnc:
             type: string
             description: HGNC gene id (CURIE).
