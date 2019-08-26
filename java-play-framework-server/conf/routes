@@ -6,11 +6,11 @@ GET     /api                        controllers.ApiDocController.api
 
 
 #Functions for Sharpener API
-POST     /sharpener/aggregate                     controllers.SharpenerApiController.aggregatePost()
-POST     /sharpener/create_gene_list                     controllers.SharpenerApiController.createGeneListPost()
-GET     /sharpener/gene_list/:geneListId                     controllers.SharpenerApiController.geneListGeneListIdGet(geneListId: String)
-POST     /sharpener/transform                     controllers.SharpenerApiController.transformPost()
-GET     /sharpener/transformers                     controllers.SharpenerApiController.transformersGet()
+POST     /api/aggregate                     controllers.SharpenerApiController.aggregatePost()
+POST     /api/create_gene_list                     controllers.SharpenerApiController.createGeneListPost()
+GET     /api/gene_list/:geneListId                     controllers.SharpenerApiController.geneListGeneListIdGet(geneListId: String)
+POST     /api/transform                     controllers.SharpenerApiController.transformPost()
+GET     /api/transformers                     controllers.SharpenerApiController.transformersGet()
 
 # Map static resources from the /public folder to the /assets URL path
 GET /assets/*file           controllers.Assets.at(file)
