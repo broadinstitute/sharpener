@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apimodels.GeneList;
@@ -36,6 +37,10 @@ public class Transformers {
 	private static Map<String, String> urls = new HashMap<>();
 
 	private static ObjectMapper mapper = new ObjectMapper();
+	
+	static {
+		mapper.setSerializationInclusion(Include.NON_NULL);
+	}
 
 
 	/**
