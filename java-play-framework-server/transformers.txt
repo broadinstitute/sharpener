@@ -1,4 +1,4 @@
-https://indigo.ncats.io/depmap_expander
-https://indigo.ncats.io/msigdb_producer
-https://indigo.ncats.io/disease_genes_expander
-https://indigo.ncats.io/phenotype_similarity_expander
+https://sharpener.ncats.io/depmap_expander
+https://sharpener.ncats.io/msigdb_producer
+https://sharpener.ncats.io/disease_genes_producer
+https://sharpener.ncats.io/phenotype_similarity_expander
