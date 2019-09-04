@@ -2,3 +2,4 @@ https://sharpener.ncats.io/depmap_expander
 https://sharpener.ncats.io/msigdb_producer
 https://sharpener.ncats.io/disease_genes_producer
 https://sharpener.ncats.io/phenotype_similarity_expander
+https://sharpener.ncats.io/common_to_rare_disease
