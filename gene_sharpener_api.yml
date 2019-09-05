@@ -1,0 +1,297 @@
+swagger: '2.0'
+info:
+  title: Sharpener API
+  version: 1.1.1
+
+host: sharpener.ncats.io
+basePath: /api
+schemes:
+- "https"
+
+paths:
+
+  /create_gene_list:
+    post:
+      tags:
+      - sharpener
+      summary: Create a new gene list
+      description: Creates a new gene list from a collection of gene symbols.
+      parameters:
+      - in: body
+        name: query
+        description: a collection of gene symbols
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          example: [AURA, TP53]
+
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/gene_list'
+            
+
+  /transformers:
+    get:
+      tags:
+      - sharpener
+      summary: Retrieve a list of transformers
+      description: Provides a list of transformers and their descriptions.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/transformer_info'
+
+  /transform:
+    post:
+      tags:
+      - sharpener
+      summary: Transform a gene list
+      description: Depending on the function of a transformer, creates, expands, or filters a gene list.
+      parameters:
+      - in: body
+        name: query
+        description: transformer query
+        required: true
+        schema:
+          $ref: '#/definitions/transformer_query'
+
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/gene_list'
+            
+  /aggregate:
+    post:
+      tags:
+      - sharpener
+      summary: Aggregate multiple gene lists
+      description: Aggregates multiple gene lists into one gene list.
+      parameters:
+      - in: body
+        name: query
+        description: aggregation query
+        required: true
+        schema:
+          $ref: '#/definitions/aggregation_query'
+
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/gene_list'
+
+  /gene_list/{gene_list_id}:
+    get:
+      tags:
+      - sharpener
+      summary: Retrieve a gene list
+      description: Retrieves a gene list for a given gene-list id.
+      parameters:
+      - in: path
+        name: gene_list_id
+        description: gene-list id
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/gene_list'
+      
+definitions:
+
+  transformer_query:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the transformer that will be executed.
+      gene_list_id:
+        type: string
+        description: >-
+          Id of the gene list that will be transformed. Required for expanders and filters; 
+          should be ommited for producers.
+      controls:
+        type: array
+        items:
+          $ref: '#/definitions/property'
+        description: >-
+          Values that control the behavior of the transformer. Names of the controls must match the names
+          specified in the transformer's definition and values must match types (and possibly 
+          allowed_values) specified in the transformer's definition.
+    required: 
+      - name
+      - controls
+    example: 
+      name: MSigDB gene-set producer
+      controls:
+        - name: gene_set_name
+          value: REACTOME_GLUCOSE_TRANSPORT
+
+  gene_list:
+    type: object
+    properties:
+      gene_list_id:
+        type: string
+        description: Id of the gene list.
+      source:
+        type: string
+        description: Transformer that produced the gene list.
+      attributes:
+        type: array
+        items:
+          $ref: '#/definitions/attribute'
+        description: Additional information and provenance about the gene list.
+      genes:
+        type: array
+        items:
+          $ref: '#/definitions/gene_info'
+        description: Members of the gene list.
+    required: 
+      - gene_list_id
+      - source
+      - genes
+
+  gene_info:
+    type: object
+    properties:
+      gene_id:
+        type: string
+        description: >-
+          Id of the gene. Preferably HGNC id; can be Entrez or ENSEMBL id if HGNC id is not available.
+      identifiers:
+        type: object
+        properties:
+          entrez:
+            type: string
+            description: Entrez gene id (CURIE).
+            example: 'NCBIGene:100'
+          hgnc:
+            type: string
+            description: HGNC gene id (CURIE).
+            example: 'HGNC:186'
+          mim:
+            type: string
+            description: OMIM gene id (CURIE).
+            example: 'MIM:608958'
+          ensembl:
+            type: array
+            items:
+              type: string
+              example: 'ENSEMBL:ENSG00000196839'
+            description: ENSEMBL gene id (CURIE).
+      attributes:
+        type: array
+        items:
+          $ref: '#/definitions/attribute'
+        description: >-
+          Additional information about the gene and provenance about gene-list menbership. Sharpener
+          will use myGene.info to add the following attributes to every gene: 'gene_symbol', 
+          'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name', 
+          and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.
+    required: 
+      - gene_id
+
+  attribute:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+      source:
+        type: string
+    required: 
+      - name
+      - value
+
+  property:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required: 
+      - name
+      - value
+
+  transformer_info:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the transformer.
+      status:
+        type: string
+        description: Status of the transformer, one of 'online', 'offline'.
+        enum: [online,offline]
+      function:
+        type: string
+        description: Function of the transfomer, one of 'producer', 'expander', 'filter'.
+        enum: [producer, expander, filter]
+      description:
+        type: string
+        description: Description of the transformer.
+      parameters:
+        type: array
+        items:
+          $ref: '#/definitions/parameter'
+        description: Parameters used to control the transformer.
+      required_attributes:
+        type: array
+        items:
+          type: string
+        description: Gene attributes required by the transformer.
+    description: Definition of the transformer.
+    required: 
+      - name
+      - status
+      - function
+
+  parameter:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the parameter.
+      type:
+        type: string
+        description: Type of the parameter, one of 'Boolean', 'int', 'double', 'string'.
+        enum: [Boolean, int, double, string]
+      default:
+        type: string
+        description: Default value of the parameter.
+      allowed_values: 
+        type: array
+        items:
+          type: string
+        description: Allowed values for the parameter.
+    required: 
+      - name
+      - type
+      - default
+
+  aggregation_query:
+    type: object
+    properties:
+      operation:
+        type: string
+        description: Gene-list aggregation operation, one of 'union', 'intersection'.
+      gene_list_ids:
+        type: array
+        items:
+          type: string
+        description: Ids of the gene lists to be aggreagted.
+        example: [gene_lis_id_1, gene_list_id_2]
+    required: 
+      - operation
+      - gene_list_ids
