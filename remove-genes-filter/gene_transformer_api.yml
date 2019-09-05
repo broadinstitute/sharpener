@@ -1,0 +1,183 @@
+swagger: '2.0'
+info:
+  title: API for gene-list transformers
+  version: 1.1.0
+  description: API for gene-list transformers.
+host: sharpener.ncats.io
+basePath: /<transformer-path>
+schemes:
+- "https"
+
+paths:
+  /transformer_info:
+    get:
+      tags:
+      - transformer
+      summary: Retrieve transformer info
+      description: Provides information about the transformer.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/transformer_info'
+
+  /transform:
+    post:
+      tags:
+      - transformer
+      parameters:
+      - in: body
+        name: query
+        description: Performs transformer query.
+        required: true
+        schema:
+          $ref: '#/definitions/transformer_query'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/gene_info'
+        
+definitions:
+
+  transformer_query:
+    type: object
+    properties:
+      genes:
+        type: array
+        items:
+          $ref: '#/definitions/gene_info'
+        description: >-
+          List of genes that will be transformed. Required for expanders and filters;
+          should be omitted for producers.
+      controls:
+        type: array
+        items:
+          $ref: '#/definitions/property'
+        description: >-
+          Values that control the behavior of the transformer. Names of the controls must match the names
+          specified in the transformer's definition and values must match types (and possibly 
+          allowed_values) specified in the transformer's definition.
+    required: 
+    - controls
+
+  gene_info:
+    type: object
+    properties:
+      gene_id:
+        type: string
+        description: Id of the gene.
+      identifiers:
+        type: object
+        properties:
+          entrez:
+            type: string
+            description: Entrez gene id (CURIE).
+            example: 'NCBIGene:100'
+          hgnc:
+            type: string
+            description: HGNC gene id (CURIE).
+            example: 'HGNC:186'
+          mim:
+            type: string
+            description: OMIM gene id (CURIE).
+            example: 'MIM:608958'
+          ensembl:
+            type: array
+            items:
+              type: string
+              example: 'ENSEMBL:ENSG00000196839'
+            description: ENSEMBL gene id (CURIE).
+      attributes:
+        type: array
+        items:
+          $ref: '#/definitions/attribute'
+        description: >-
+          Additional information about the gene and provenance about gene-list menbership. Sharpener
+          will use myGene.info to add the following attributes to every gene: 'gene_symbol', 
+          'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name', 
+          and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.
+    required: 
+    - gene_id
+
+  attribute:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+      source:
+        type: string
+    required: 
+    - name
+    - value
+
+  property:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required: 
+    - name
+    - value
+
+  transformer_info:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the transformer.
+      function:
+        type: string
+        description: Function of the transformer, one of 'producer', 'expander', 'filter'.
+        enum: [producer, expander, filter]
+      description:
+        type: string
+        description: Description of the transformer.
+      parameters:
+        type: array
+        items:
+          $ref: '#/definitions/parameter'
+        description: Parameters used to control the transformer.
+      required_attributes:
+        type: array
+        items:
+          type: string
+        description: Gene attributes required by the transformer
+    description: Definition of the transformer.
+    required: 
+    - name
+    - function
+    - description
+    - parameters
+    - required_attributes
+
+
+  parameter:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the parameter.
+      type:
+        type: string
+        description: Type of the parameter, one of 'Boolean', 'int', 'double', 'string'.
+        enum: [Boolean, int, double, string]
+      default:
+        type: string
+        description: Default value of the parameter.
+      allowed_values: 
+        type: array
+        items:
+          type: string
+        description: Allowed values for the parameter.
+    required: 
+    - name
+    - type
+    - default
+
