@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 /**
  * AggregationQuery
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-26T20:28:29.551Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class AggregationQuery   {
@@ -26,7 +26,7 @@ public class AggregationQuery   {
   }
 
    /**
-   * Gene-list aggregation operation, one of 'union', 'intersection'.
+   * Gene-list aggregation operation, one of 'union', 'intersection', 'difference','symmetric difference'.
    * @return operation
   **/
   @NotNull

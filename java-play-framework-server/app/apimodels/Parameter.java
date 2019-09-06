@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 /**
  * Parameter
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-26T20:28:29.551Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Parameter   {
@@ -60,6 +60,12 @@ public class Parameter   {
 
   @JsonProperty("allowed_values")
   private List<String> allowedValues = null;
+
+  @JsonProperty("suggested_values")
+  private String suggestedValues = null;
+
+  @JsonProperty("lookup_url")
+  private String lookupUrl = null;
 
   public Parameter name(String name) {
     this.name = name;
@@ -140,6 +146,40 @@ public class Parameter   {
     this.allowedValues = allowedValues;
   }
 
+  public Parameter suggestedValues(String suggestedValues) {
+    this.suggestedValues = suggestedValues;
+    return this;
+  }
+
+   /**
+   * Suggested value range for the parameter.
+   * @return suggestedValues
+  **/
+    public String getSuggestedValues() {
+    return suggestedValues;
+  }
+
+  public void setSuggestedValues(String suggestedValues) {
+    this.suggestedValues = suggestedValues;
+  }
+
+  public Parameter lookupUrl(String lookupUrl) {
+    this.lookupUrl = lookupUrl;
+    return this;
+  }
+
+   /**
+   * URL to search for suitable parameter values.
+   * @return lookupUrl
+  **/
+    public String getLookupUrl() {
+    return lookupUrl;
+  }
+
+  public void setLookupUrl(String lookupUrl) {
+    this.lookupUrl = lookupUrl;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -153,12 +193,14 @@ public class Parameter   {
     return Objects.equals(name, parameter.name) &&
         Objects.equals(type, parameter.type) &&
         Objects.equals(_default, parameter._default) &&
-        Objects.equals(allowedValues, parameter.allowedValues);
+        Objects.equals(allowedValues, parameter.allowedValues) &&
+        Objects.equals(suggestedValues, parameter.suggestedValues) &&
+        Objects.equals(lookupUrl, parameter.lookupUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, _default, allowedValues);
+    return Objects.hash(name, type, _default, allowedValues, suggestedValues, lookupUrl);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -171,6 +213,8 @@ public class Parameter   {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    _default: ").append(toIndentedString(_default)).append("\n");
     sb.append("    allowedValues: ").append(toIndentedString(allowedValues)).append("\n");
+    sb.append("    suggestedValues: ").append(toIndentedString(suggestedValues)).append("\n");
+    sb.append("    lookupUrl: ").append(toIndentedString(lookupUrl)).append("\n");
     sb.append("}");
     return sb.toString();
   }

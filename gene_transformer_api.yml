@@ -95,10 +95,9 @@ definitions:
         items:
           $ref: '#/definitions/attribute'
         description: >-
-          Additional information about the gene and provenance about gene-list menbership. Sharpener
-          will use myGene.info to add the following attributes to every gene: 'gene_symbol', 
-          'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name', 
-          and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.
+          Additional information about the gene and provenance about gene-list membership. Sharpener
+          will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene. 
+          Multiple synonyms are separated by semicolons.
     required: 
     - gene_id
 
@@ -132,6 +131,9 @@ definitions:
       name:
         type: string
         description: Name of the transformer.
+      url:
+        type: string
+        description: Transformers's url.
       function:
         type: string
         description: Function of the transformer, one of 'producer', 'expander', 'filter'.
@@ -176,6 +178,12 @@ definitions:
         items:
           type: string
         description: Allowed values for the parameter.
+      suggested_values:
+        type: string
+        description: Suggested value range for the parameter.
+      lookup_url:
+        type: string
+        description: URL to search for suitable parameter values. 
     required: 
     - name
     - type
