@@ -71,6 +71,7 @@ public class Transformers {
 				}
 				if (info != null) {
 					transformers.add(info);
+					info.setUrl(baseURL);
 					urlMap.put(info.getName(), baseURL);
 					transformerMap.put(baseURL, info);
 				}
