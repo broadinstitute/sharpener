@@ -8,16 +8,13 @@ import apimodels.AggregationQuery;
 import apimodels.Attribute;
 import apimodels.GeneInfo;
 import apimodels.GeneList;
-import scala.util.Random;
 
-/**
- * @author vdancik
- *
- */
+
 public class GeneLists {
 
 	private static TimeOrderedMap<String,GeneList> geneLists = new TimeOrderedMap<String,GeneList>(14 * 24 * 60 * 60 * 1000/* two weeks */);
 
+	private static IdGenerator idGenerator = new IdGenerator(10, geneLists);
 
 	public static GeneList createList(GeneInfo[] genes) {
 		GeneList geneList = new GeneList();
@@ -167,7 +164,7 @@ public class GeneLists {
 
 
 	private synchronized static void save(GeneList geneList) {
-		String id = nextId();
+		String id = idGenerator.nextId();
 		geneList.setGeneListId(id);
 		geneLists.put(id, geneList);
 	}
@@ -175,26 +172,6 @@ public class GeneLists {
 
 	synchronized static GeneList findGeneList(String geneListId) {
 		return geneLists.get(geneListId);
-	}
-
-	private static Random rand = new Random();
-
-
-	private static String randString(int len) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < len; i++) {
-			sb.append(rand.scala$util$Random$$nextAlphaNum$1());
-		}
-		return sb.toString();
-	}
-
-
-	private synchronized static String nextId() {
-		String id = randString(10);
-		while (geneLists.containsKey(id)) {
-			id = randString(10);
-		}
-		return id;
 	}
 
 

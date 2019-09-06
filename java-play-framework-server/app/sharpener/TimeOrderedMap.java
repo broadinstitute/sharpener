@@ -8,7 +8,7 @@ import java.util.Map;
  * A HashMap that keeps time stamps for key-value pairs and removes them after they
  * were not accessed for a certain time.
  */
-public class TimeOrderedMap<S,T> {
+public class TimeOrderedMap<S,T> implements Container<S>{
 
 	private static class Entry<S,T> {
 
@@ -45,7 +45,8 @@ public class TimeOrderedMap<S,T> {
 	/**
 	 * Returns true if this map contains a mapping for the specified key.
 	 */
-	synchronized boolean containsKey(final S key) {
+	@Override
+	public synchronized boolean contains(final S key) {
 		return map.containsKey(key);
 	}
 

@@ -4,6 +4,8 @@ import apimodels.Request;
 import apimodels.TransformerQuery;
 
 import play.mvc.Http;
+import sharpener.AssynchronousRequest;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +16,12 @@ import javax.validation.constraints.*;
 public class AsynchronousApiControllerImp implements AsynchronousApiControllerImpInterface {
     @Override
     public Request statusRequestIdGet(String requestId) throws Exception {
-        //Do your magic!!!
-        return new Request();
+    	return AssynchronousRequest.status(requestId);
     }
 
     @Override
     public Request submitPost(TransformerQuery query) throws Exception {
-        //Do your magic!!!
-        return new Request();
+        return AssynchronousRequest.submit(query);
     }
 
 }
