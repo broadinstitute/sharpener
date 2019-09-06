@@ -11,12 +11,15 @@ import javax.validation.constraints.*;
 /**
  * Definition of the transformer.
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-26T20:28:29.551Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class TransformerInfo   {
   @JsonProperty("name")
   private String name = null;
+
+  @JsonProperty("url")
+  private String url = null;
 
   /**
    * Status of the transformer, one of 'online', 'offline'.
@@ -113,6 +116,23 @@ public class TransformerInfo   {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public TransformerInfo url(String url) {
+    this.url = url;
+    return this;
+  }
+
+   /**
+   * Transformers's url.
+   * @return url
+  **/
+    public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public TransformerInfo status(StatusEnum status) {
@@ -230,6 +250,7 @@ public class TransformerInfo   {
     }
     TransformerInfo transformerInfo = (TransformerInfo) o;
     return Objects.equals(name, transformerInfo.name) &&
+        Objects.equals(url, transformerInfo.url) &&
         Objects.equals(status, transformerInfo.status) &&
         Objects.equals(function, transformerInfo.function) &&
         Objects.equals(description, transformerInfo.description) &&
@@ -239,7 +260,7 @@ public class TransformerInfo   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, status, function, description, parameters, requiredAttributes);
+    return Objects.hash(name, url, status, function, description, parameters, requiredAttributes);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -249,6 +270,7 @@ public class TransformerInfo   {
     sb.append("class TransformerInfo {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    url: ").append(toIndentedString(url)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    function: ").append(toIndentedString(function)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");

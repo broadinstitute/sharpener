@@ -12,7 +12,7 @@ import javax.validation.constraints.*;
 /**
  * GeneInfo
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-26T20:28:29.551Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class GeneInfo   {
@@ -75,7 +75,7 @@ public class GeneInfo   {
   }
 
    /**
-   * Additional information about the gene and provenance about gene-list menbership. Sharpener will use myGene.info to add the following attributes to every gene: 'gene_symbol',  'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name',  and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.
+   * Additional information about the gene and provenance about gene-list membership. Sharpener will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene.  Multiple synonyms are separated by semicolons.
    * @return attributes
   **/
   @Valid

@@ -1,7 +1,7 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "1.1.1",
+    "version" : "1.2.0",
     "title" : "Sharpener API"
   },
   "host" : "sharpener.ncats.io",
@@ -132,6 +132,55 @@
         },
         "x-accepts" : "application/json"
       }
+    },
+    "/submit" : {
+      "post" : {
+        "tags" : [ "asynchronous" ],
+        "summary" : "Asynchronously transform a gene list",
+        "description" : "Depending on the function of a transformer, creates, expands, or filters a gene list.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "query",
+          "description" : "transformer query",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/transformer_query"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/request"
+            }
+          }
+        },
+        "x-contentType" : "application/json",
+        "x-accepts" : "application/json"
+      }
+    },
+    "/status/{request_id}" : {
+      "get" : {
+        "tags" : [ "asynchronous" ],
+        "summary" : "Get a status of a request",
+        "description" : "Get a status of an asynchronous transformation request.",
+        "parameters" : [ {
+          "name" : "request_id",
+          "in" : "path",
+          "description" : "Id of an asynchronous transformation request.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/request"
+            }
+          }
+        },
+        "x-accepts" : "application/json"
+      }
     }
   },
   "definitions" : {
@@ -196,7 +245,8 @@
             "mim" : "MIM:608958",
             "entrez" : "NCBIGene:100",
             "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
-            "hgnc" : "HGNC:186"
+            "hgnc" : "HGNC:186",
+            "mygene_info" : "100"
           },
           "attributes" : [ {
             "name" : "name",
@@ -213,7 +263,8 @@
             "mim" : "MIM:608958",
             "entrez" : "NCBIGene:100",
             "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
-            "hgnc" : "HGNC:186"
+            "hgnc" : "HGNC:186",
+            "mygene_info" : "100"
           },
           "attributes" : [ {
             "name" : "name",
@@ -252,7 +303,7 @@
         },
         "attributes" : {
           "type" : "array",
-          "description" : "Additional information about the gene and provenance about gene-list menbership. Sharpener will use myGene.info to add the following attributes to every gene: 'gene_symbol',  'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name',  and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.",
+          "description" : "Additional information about the gene and provenance about gene-list membership. Sharpener will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene.  Multiple synonyms are separated by semicolons.",
           "items" : {
             "$ref" : "#/definitions/attribute"
           }
@@ -263,7 +314,8 @@
           "mim" : "MIM:608958",
           "entrez" : "NCBIGene:100",
           "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
-          "hgnc" : "HGNC:186"
+          "hgnc" : "HGNC:186",
+          "mygene_info" : "100"
         },
         "attributes" : [ {
           "name" : "name",
@@ -317,6 +369,10 @@
           "type" : "string",
           "description" : "Name of the transformer."
         },
+        "url" : {
+          "type" : "string",
+          "description" : "Transformers's url."
+        },
         "status" : {
           "type" : "string",
           "description" : "Status of the transformer, one of 'online', 'offline'.",
@@ -356,13 +412,18 @@
           "allowed_values" : [ "allowed_values", "allowed_values" ],
           "default" : "default",
           "name" : "name",
+          "suggested_values" : "suggested_values",
+          "lookup_url" : "lookup_url",
           "type" : "Boolean"
         }, {
           "allowed_values" : [ "allowed_values", "allowed_values" ],
           "default" : "default",
           "name" : "name",
+          "suggested_values" : "suggested_values",
+          "lookup_url" : "lookup_url",
           "type" : "Boolean"
         } ],
+        "url" : "url",
         "status" : "online"
       }
     },
@@ -389,12 +450,22 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "suggested_values" : {
+          "type" : "string",
+          "description" : "Suggested value range for the parameter."
+        },
+        "lookup_url" : {
+          "type" : "string",
+          "description" : "URL to search for suitable parameter values."
         }
       },
       "example" : {
         "allowed_values" : [ "allowed_values", "allowed_values" ],
         "default" : "default",
         "name" : "name",
+        "suggested_values" : "suggested_values",
+        "lookup_url" : "lookup_url",
         "type" : "Boolean"
       }
     },
@@ -404,7 +475,7 @@
       "properties" : {
         "operation" : {
           "type" : "string",
-          "description" : "Gene-list aggregation operation, one of 'union', 'intersection'."
+          "description" : "Gene-list aggregation operation, one of 'union', 'intersection', 'difference','symmetric difference'."
         },
         "gene_list_ids" : {
           "type" : "array",
@@ -414,6 +485,40 @@
             "type" : "string"
           }
         }
+      }
+    },
+    "request" : {
+      "type" : "object",
+      "required" : [ "request_id", "status" ],
+      "properties" : {
+        "request_id" : {
+          "type" : "string",
+          "description" : "Id of the request."
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "Status of the request.",
+          "enum" : [ "success", "failed", "running" ]
+        },
+        "gene_list_id" : {
+          "type" : "string",
+          "description" : "Id of a gene list produced by successful completion this request."
+        },
+        "current_step" : {
+          "type" : "integer",
+          "description" : "Current step of the transformation (optional)."
+        },
+        "total_steps" : {
+          "type" : "integer",
+          "description" : "Total number of steps in the transformation request (optional)."
+        }
+      },
+      "example" : {
+        "gene_list_id" : "gene_list_id",
+        "total_steps" : 6,
+        "request_id" : "request_id",
+        "status" : "success",
+        "current_step" : 0
       }
     },
     "gene_info_identifiers" : {
@@ -440,13 +545,19 @@
             "type" : "string",
             "example" : "ENSEMBL:ENSG00000196839"
           }
+        },
+        "mygene_info" : {
+          "type" : "string",
+          "example" : "100",
+          "description" : "myGene.info primary id."
         }
       },
       "example" : {
         "mim" : "MIM:608958",
         "entrez" : "NCBIGene:100",
         "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
-        "hgnc" : "HGNC:186"
+        "hgnc" : "HGNC:186",
+        "mygene_info" : "100"
       }
     }
   }

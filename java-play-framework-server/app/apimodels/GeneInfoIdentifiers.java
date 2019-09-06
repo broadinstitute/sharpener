@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 /**
  * GeneInfoIdentifiers
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-08-26T20:28:29.551Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class GeneInfoIdentifiers   {
@@ -25,6 +25,9 @@ public class GeneInfoIdentifiers   {
 
   @JsonProperty("ensembl")
   private List<String> ensembl = null;
+
+  @JsonProperty("mygene_info")
+  private String mygeneInfo = null;
 
   public GeneInfoIdentifiers entrez(String entrez) {
     this.entrez = entrez;
@@ -102,6 +105,23 @@ public class GeneInfoIdentifiers   {
     this.ensembl = ensembl;
   }
 
+  public GeneInfoIdentifiers mygeneInfo(String mygeneInfo) {
+    this.mygeneInfo = mygeneInfo;
+    return this;
+  }
+
+   /**
+   * myGene.info primary id.
+   * @return mygeneInfo
+  **/
+    public String getMygeneInfo() {
+    return mygeneInfo;
+  }
+
+  public void setMygeneInfo(String mygeneInfo) {
+    this.mygeneInfo = mygeneInfo;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -115,12 +135,13 @@ public class GeneInfoIdentifiers   {
     return Objects.equals(entrez, geneInfoIdentifiers.entrez) &&
         Objects.equals(hgnc, geneInfoIdentifiers.hgnc) &&
         Objects.equals(mim, geneInfoIdentifiers.mim) &&
-        Objects.equals(ensembl, geneInfoIdentifiers.ensembl);
+        Objects.equals(ensembl, geneInfoIdentifiers.ensembl) &&
+        Objects.equals(mygeneInfo, geneInfoIdentifiers.mygeneInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(entrez, hgnc, mim, ensembl);
+    return Objects.hash(entrez, hgnc, mim, ensembl, mygeneInfo);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -133,6 +154,7 @@ public class GeneInfoIdentifiers   {
     sb.append("    hgnc: ").append(toIndentedString(hgnc)).append("\n");
     sb.append("    mim: ").append(toIndentedString(mim)).append("\n");
     sb.append("    ensembl: ").append(toIndentedString(ensembl)).append("\n");
+    sb.append("    mygeneInfo: ").append(toIndentedString(mygeneInfo)).append("\n");
     sb.append("}");
     return sb.toString();
   }
