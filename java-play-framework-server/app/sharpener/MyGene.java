@@ -20,8 +20,6 @@ public class MyGene {
 	private static final String myGeneInfoSearch = "https://mygene.info/v3/query?q=%s&species=9606";
 	private static final String myGeneInfoQuery = "https://mygene.info/v3/gene/%s?fields=symbol,name,entrezgene,ensembl.gene,HGNC,MIM,alias";
 	private static final String MY_GENE_INFO_ID = "myGene.info id";
-	private static final String ENTREZ_GENE_ID = "entrez_gene_id";
-	private static final String HGNC = "HGNC";
 	private static final String NCBI_GENE = "NCBIGene:";
 	
 	static class Info {
@@ -43,19 +41,18 @@ public class MyGene {
 		static GeneInfo addInfo(GeneInfo src) {
 			String hgncId = null;
 			String entrezGeneId = null;
-			if (src.getIdentifiers() != null) {
-				hgncId = src.getIdentifiers().getHgnc();
-				entrezGeneId = src.getIdentifiers().getEntrez();
+			GeneInfoIdentifiers identifiers = src.getIdentifiers();
+			if (identifiers != null) {
+				if (identifiers.getMygeneInfo() != null && !identifiers.getMygeneInfo().equals("")) {
+					return src;
+				}
+				hgncId = identifiers.getHgnc();
+				entrezGeneId = identifiers.getEntrez();
 			}
 			for (Attribute attribute : src.getAttributes()) {
 				if (MY_GENE_INFO_ID.equals(attribute.getName())) {
+					identifiers.setMygeneInfo(attribute.getValue());
 					return src;
-				}
-				if (entrezGeneId == null && ENTREZ_GENE_ID.equals(attribute.getName())) {
-					entrezGeneId = attribute.getValue();
-				}
-				if (hgncId == null && HGNC.equals(attribute.getName())) {
-					hgncId = attribute.getValue();
 				}
 			}
 			if (hgncId == null && src.getGeneId() != null && src.getGeneId().toUpperCase().startsWith("HGNC:")) {
@@ -367,6 +364,9 @@ public class MyGene {
 		}
 
 		private void addIdentifiers(GeneInfoIdentifiers identifiers) {
+			if (identifiers.getMygeneInfo() == null && getId() != null) {
+				identifiers.setMygeneInfo(getId());
+			}
 			if (identifiers.getEntrez() == null && getEntrezgene() != null) {
 				identifiers.setEntrez(NCBI_GENE + getEntrezgene());
 			}
@@ -402,24 +402,9 @@ public class MyGene {
 				geneInfo.addAttributesItem(
 						new Attribute().name("gene_symbol").value(getSymbol()).source("myGene.info"));
 			}
-			if (getEntrezgene() != null) {
-				geneInfo.addAttributesItem(
-						new Attribute().name(ENTREZ_GENE_ID).value(getEntrezgene()).source("myGene.info"));
-			}
-			if (getHGNC() != null) {
-				geneInfo.addAttributesItem(
-						new Attribute().name(HGNC).value(getHGNC()).source("myGene.info"));
-			}
-			if (getMIM() != null) {
-				geneInfo.addAttributesItem(new Attribute().name("MIM").value("MIM:" + getMIM()).source("myGene.info"));
-			}
 			if (getAlias() != null && getAlias().length > 0) {
 				geneInfo.addAttributesItem(
 						new Attribute().name("synonyms").value(String.join(";", getAlias())).source("myGene.info"));
-			}
-			if (getEnsembl() != null && getEnsembl().length > 0) {
-				geneInfo.addAttributesItem(
-						new Attribute().name("ensembl_gene_id").value(String.join(";",getEnsembl())).source("myGene.info"));
 			}
 			if (getName() != null) {
 				geneInfo.addAttributesItem(new Attribute().name("gene_name").value(getName()).source("myGene.info"));

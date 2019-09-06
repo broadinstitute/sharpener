@@ -97,6 +97,7 @@ public class GeneLists {
 				String geneId = gene.getGeneId();
 				if (!genes.containsKey(geneId)) {
 					GeneInfo unionGene = new GeneInfo().geneId(geneId);
+					unionGene.setIdentifiers(gene.getIdentifiers());
 					geneList.addGenesItem(unionGene);
 					genes.put(geneId, unionGene);
 				}
@@ -118,7 +119,7 @@ public class GeneLists {
 		}
 		HashMap<String,GeneInfo> intersection = new HashMap<String,GeneInfo>();
 		for (GeneInfo gene : source.getGenes()) {
-			intersection.put(gene.getGeneId(), new GeneInfo().geneId(gene.getGeneId()));
+			intersection.put(gene.getGeneId(), new GeneInfo().geneId(gene.getGeneId()).identifiers(gene.getIdentifiers()));
 		}
 		for (String geneListId : geneListIds) {
 			source = findGeneList(geneListId);
