@@ -1,6 +1,6 @@
 name := """sharpener"""
 
-version := "1.1.2"
+version := "1.2.0"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava)
 
