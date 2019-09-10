@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: API for gene-list transformers
-  version: 1.1.0
+  version: 1.2.0
   description: API for gene-list transformers.
 host: sharpener.ncats.io
 basePath: /<transformer-path>
@@ -90,6 +90,10 @@ definitions:
               type: string
               example: 'ENSEMBL:ENSG00000196839'
             description: ENSEMBL gene id (CURIE).
+          mygene_info:
+            type: string
+            description: myGene.info primary id.
+            example: '100'
       attributes:
         type: array
         items:
@@ -131,9 +135,6 @@ definitions:
       name:
         type: string
         description: Name of the transformer.
-      url:
-        type: string
-        description: Transformers's url.
       function:
         type: string
         description: Function of the transformer, one of 'producer', 'expander', 'filter'.
