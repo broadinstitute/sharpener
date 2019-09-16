@@ -4,3 +4,9 @@ https://sharpener.ncats.io/disease_genes_producer
 https://sharpener.ncats.io/phenotype_similarity_expander
 https://sharpener.ncats.io/common_to_rare_disease
 https://sharpener.ncats.io/remove_genes_filter
+https://sharpener.ncats.io/attribute_filter
+https://sharpener.ncats.io/gene_gene_interaction_expander
+https://sharpener.ncats.io/expression_correlation
+https://sharpener.ncats.io/pharos_filter
+https://sharpener.ncats.io/gene_gene_bicluster_expander
+https://sharpener.ncats.io/pathway_enrichment

@@ -5,6 +5,10 @@
 GET     /api                        controllers.ApiDocController.api
 
 
+#Functions for Asynchronous API
+GET     /api/status/:requestId                     controllers.AsynchronousApiController.statusRequestIdGet(requestId: String)
+POST     /api/submit                     controllers.AsynchronousApiController.submitPost()
+
 #Functions for Sharpener API
 POST     /api/aggregate                     controllers.SharpenerApiController.aggregatePost()
 POST     /api/create_gene_list                     controllers.SharpenerApiController.createGeneListPost()

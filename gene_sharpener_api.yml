@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: Sharpener API
-  version: 1.1.1
+  version: 1.2.0
 
 host: sharpener.ncats.io
 basePath: /api
@@ -106,6 +106,45 @@ paths:
           schema:
             $ref: '#/definitions/gene_list'
       
+  /submit:
+    post:
+      tags:
+      -  asynchronous
+      summary: Asynchronously transform a gene list
+      description: Depending on the function of a transformer, creates, expands, or filters a gene list.
+      parameters:
+      - in: body
+        name: query
+        description: transformer query
+        required: true
+        schema:
+          $ref: '#/definitions/transformer_query'
+
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/request'
+            
+  /status/{request_id}:
+    get:
+      tags:
+      -  asynchronous
+      summary: Get a status of a request
+      description: Get a status of an asynchronous transformation request.
+      parameters:
+      - in: path
+        name: request_id
+        description: Id of an asynchronous transformation request.
+        required: true
+        type: string
+
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/request'
+            
 definitions:
 
   transformer_query:
@@ -188,15 +227,18 @@ definitions:
               type: string
               example: 'ENSEMBL:ENSG00000196839'
             description: ENSEMBL gene id (CURIE).
+          mygene_info:
+            type: string
+            description: myGene.info primary id.
+            example: '100'
       attributes:
         type: array
         items:
           $ref: '#/definitions/attribute'
         description: >-
-          Additional information about the gene and provenance about gene-list menbership. Sharpener
-          will use myGene.info to add the following attributes to every gene: 'gene_symbol', 
-          'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name', 
-          and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.
+          Additional information about the gene and provenance about gene-list membership. Sharpener
+          will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene. 
+          Multiple synonyms are separated by semicolons.
     required: 
       - gene_id
 
@@ -230,6 +272,9 @@ definitions:
       name:
         type: string
         description: Name of the transformer.
+      url:
+        type: string
+        description: Transformers's url.
       status:
         type: string
         description: Status of the transformer, one of 'online', 'offline'.
@@ -275,6 +320,12 @@ definitions:
         items:
           type: string
         description: Allowed values for the parameter.
+      suggested_values:
+        type: string
+        description: Suggested value range for the parameter.
+      lookup_url:
+        type: string
+        description: URL to search for suitable parameter values. 
     required: 
       - name
       - type
@@ -285,7 +336,7 @@ definitions:
     properties:
       operation:
         type: string
-        description: Gene-list aggregation operation, one of 'union', 'intersection'.
+        description: Gene-list aggregation operation, one of 'union', 'intersection', 'difference','symmetric difference'.
       gene_list_ids:
         type: array
         items:
@@ -295,3 +346,27 @@ definitions:
     required: 
       - operation
       - gene_list_ids
+      
+  request:
+    type: object
+    properties:
+      request_id:
+        type: string
+        description: Id of the request.
+      status:
+        type: string
+        description: Status of the request.
+        enum: [success, failed, running]
+      gene_list_id:
+        type: string
+        description: Id of a gene list produced by successful completion this request.
+      current_step:
+        type: integer
+        description: Current step of the transformation (optional).
+      total_steps:
+        type: integer
+        description: Total number of steps in the transformation request (optional).
+    required:
+      - request_id
+      - status
+

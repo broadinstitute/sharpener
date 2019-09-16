@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: API for gene-list transformers
-  version: 1.1.0
+  version: 1.2.0
   description: API for gene-list transformers.
 host: sharpener.ncats.io
 basePath: /<transformer-path>
@@ -90,15 +90,18 @@ definitions:
               type: string
               example: 'ENSEMBL:ENSG00000196839'
             description: ENSEMBL gene id (CURIE).
+          mygene_info:
+            type: string
+            description: myGene.info primary id.
+            example: '100'
       attributes:
         type: array
         items:
           $ref: '#/definitions/attribute'
         description: >-
-          Additional information about the gene and provenance about gene-list menbership. Sharpener
-          will use myGene.info to add the following attributes to every gene: 'gene_symbol', 
-          'entrez_gene_id', 'HGNC', 'MIM', 'ensembl_gene_id', 'synonyms', 'gene_name', 
-          and 'myGene.info id'. Multiple synonyms and ensembl_gene_id are separated by semicolons.
+          Additional information about the gene and provenance about gene-list membership. Sharpener
+          will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene. 
+          Multiple synonyms are separated by semicolons.
     required: 
     - gene_id
 
@@ -176,6 +179,12 @@ definitions:
         items:
           type: string
         description: Allowed values for the parameter.
+      suggested_values:
+        type: string
+        description: Suggested value range for the parameter.
+      lookup_url:
+        type: string
+        description: URL to search for suitable parameter values. 
     required: 
     - name
     - type
