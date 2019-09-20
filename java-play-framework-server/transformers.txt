@@ -10,3 +10,6 @@ https://sharpener.ncats.io/expression_correlation
 https://sharpener.ncats.io/pharos_filter
 https://sharpener.ncats.io/gene_gene_bicluster_expander
 https://sharpener.ncats.io/pathway_enrichment
+https://sharpener.ncats.io/string_expander
+https://sharpener.ncats.io/hypergeometric_enrichment_expander
+https://sharpener.ncats.io/hypergeometric_enrichment_filter
