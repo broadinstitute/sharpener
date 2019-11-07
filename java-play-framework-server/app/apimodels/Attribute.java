@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 /**
  * Attribute
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Attribute   {
@@ -21,13 +21,16 @@ public class Attribute   {
   @JsonProperty("source")
   private String source = null;
 
+  @JsonProperty("url")
+  private String url = null;
+
   public Attribute name(String name) {
     this.name = name;
     return this;
   }
 
    /**
-   * Get name
+   * Name of the attribute.
    * @return name
   **/
   @NotNull
@@ -45,7 +48,7 @@ public class Attribute   {
   }
 
    /**
-   * Get value
+   * Value of the attribute.
    * @return value
   **/
   @NotNull
@@ -63,15 +66,33 @@ public class Attribute   {
   }
 
    /**
-   * Get source
+   * Transformer that produced the attribute's value.
    * @return source
   **/
-    public String getSource() {
+  @NotNull
+  public String getSource() {
     return source;
   }
 
   public void setSource(String source) {
     this.source = source;
+  }
+
+  public Attribute url(String url) {
+    this.url = url;
+    return this;
+  }
+
+   /**
+   * URL for additional information.
+   * @return url
+  **/
+    public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 
 
@@ -86,12 +107,13 @@ public class Attribute   {
     Attribute attribute = (Attribute) o;
     return Objects.equals(name, attribute.name) &&
         Objects.equals(value, attribute.value) &&
-        Objects.equals(source, attribute.source);
+        Objects.equals(source, attribute.source) &&
+        Objects.equals(url, attribute.url);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, value, source);
+    return Objects.hash(name, value, source, url);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -103,6 +125,7 @@ public class Attribute   {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
+    sb.append("    url: ").append(toIndentedString(url)).append("\n");
     sb.append("}");
     return sb.toString();
   }
