@@ -1,5 +1,6 @@
 package apimodels;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.*;
@@ -10,7 +11,7 @@ import javax.validation.constraints.*;
 /**
  * Parameter
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Parameter   {
@@ -58,8 +59,14 @@ public class Parameter   {
   @JsonProperty("default")
   private String _default = null;
 
+  @JsonProperty("biolink_class")
+  private String biolinkClass = null;
+
   @JsonProperty("allowed_values")
   private List<String> allowedValues = null;
+
+  @JsonProperty("allowed_range")
+  private List<BigDecimal> allowedRange = null;
 
   @JsonProperty("suggested_values")
   private String suggestedValues = null;
@@ -121,6 +128,23 @@ public class Parameter   {
     this._default = _default;
   }
 
+  public Parameter biolinkClass(String biolinkClass) {
+    this.biolinkClass = biolinkClass;
+    return this;
+  }
+
+   /**
+   * Biolink class of the paramater. Applicable to producers only and only one parameter can have a biolink class.
+   * @return biolinkClass
+  **/
+    public String getBiolinkClass() {
+    return biolinkClass;
+  }
+
+  public void setBiolinkClass(String biolinkClass) {
+    this.biolinkClass = biolinkClass;
+  }
+
   public Parameter allowedValues(List<String> allowedValues) {
     this.allowedValues = allowedValues;
     return this;
@@ -144,6 +168,33 @@ public class Parameter   {
 
   public void setAllowedValues(List<String> allowedValues) {
     this.allowedValues = allowedValues;
+  }
+
+  public Parameter allowedRange(List<BigDecimal> allowedRange) {
+    this.allowedRange = allowedRange;
+    return this;
+  }
+
+  public Parameter addAllowedRangeItem(BigDecimal allowedRangeItem) {
+    if (allowedRange == null) {
+      allowedRange = new ArrayList<>();
+    }
+    allowedRange.add(allowedRangeItem);
+    return this;
+  }
+
+   /**
+   * Allowed range for values of the parameter.
+   * @return allowedRange
+  **/
+  @Size(min=2,max=2)
+@Valid
+  public List<BigDecimal> getAllowedRange() {
+    return allowedRange;
+  }
+
+  public void setAllowedRange(List<BigDecimal> allowedRange) {
+    this.allowedRange = allowedRange;
   }
 
   public Parameter suggestedValues(String suggestedValues) {
@@ -193,14 +244,16 @@ public class Parameter   {
     return Objects.equals(name, parameter.name) &&
         Objects.equals(type, parameter.type) &&
         Objects.equals(_default, parameter._default) &&
+        Objects.equals(biolinkClass, parameter.biolinkClass) &&
         Objects.equals(allowedValues, parameter.allowedValues) &&
+        Objects.equals(allowedRange, parameter.allowedRange) &&
         Objects.equals(suggestedValues, parameter.suggestedValues) &&
         Objects.equals(lookupUrl, parameter.lookupUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, _default, allowedValues, suggestedValues, lookupUrl);
+    return Objects.hash(name, type, _default, biolinkClass, allowedValues, allowedRange, suggestedValues, lookupUrl);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -212,7 +265,9 @@ public class Parameter   {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    _default: ").append(toIndentedString(_default)).append("\n");
+    sb.append("    biolinkClass: ").append(toIndentedString(biolinkClass)).append("\n");
     sb.append("    allowedValues: ").append(toIndentedString(allowedValues)).append("\n");
+    sb.append("    allowedRange: ").append(toIndentedString(allowedRange)).append("\n");
     sb.append("    suggestedValues: ").append(toIndentedString(suggestedValues)).append("\n");
     sb.append("    lookupUrl: ").append(toIndentedString(lookupUrl)).append("\n");
     sb.append("}");

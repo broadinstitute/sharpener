@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 /**
  * GeneInfoIdentifiers
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class GeneInfoIdentifiers   {

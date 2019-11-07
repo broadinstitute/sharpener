@@ -1,6 +1,7 @@
 package controllers;
 
 import apimodels.AggregationQuery;
+import apimodels.ErrorMsg;
 import apimodels.GeneList;
 import java.util.List;
 import apimodels.TransformerInfo;

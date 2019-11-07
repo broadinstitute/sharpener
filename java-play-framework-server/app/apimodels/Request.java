@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 /**
  * Request
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Request   {
@@ -59,6 +59,9 @@ public class Request   {
 
   @JsonProperty("total_steps")
   private Integer totalSteps = null;
+
+  @JsonProperty("error_msg")
+  private String errorMsg = null;
 
   public Request requestId(String requestId) {
     this.requestId = requestId;
@@ -147,6 +150,23 @@ public class Request   {
     this.totalSteps = totalSteps;
   }
 
+  public Request errorMsg(String errorMsg) {
+    this.errorMsg = errorMsg;
+    return this;
+  }
+
+   /**
+   * Error message (for failed requests).
+   * @return errorMsg
+  **/
+    public String getErrorMsg() {
+    return errorMsg;
+  }
+
+  public void setErrorMsg(String errorMsg) {
+    this.errorMsg = errorMsg;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -161,12 +181,13 @@ public class Request   {
         Objects.equals(status, request.status) &&
         Objects.equals(geneListId, request.geneListId) &&
         Objects.equals(currentStep, request.currentStep) &&
-        Objects.equals(totalSteps, request.totalSteps);
+        Objects.equals(totalSteps, request.totalSteps) &&
+        Objects.equals(errorMsg, request.errorMsg);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(requestId, status, geneListId, currentStep, totalSteps);
+    return Objects.hash(requestId, status, geneListId, currentStep, totalSteps, errorMsg);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -180,6 +201,7 @@ public class Request   {
     sb.append("    geneListId: ").append(toIndentedString(geneListId)).append("\n");
     sb.append("    currentStep: ").append(toIndentedString(currentStep)).append("\n");
     sb.append("    totalSteps: ").append(toIndentedString(totalSteps)).append("\n");
+    sb.append("    errorMsg: ").append(toIndentedString(errorMsg)).append("\n");
     sb.append("}");
     return sb.toString();
   }
