@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 /**
  * Additional metadata for the transformer.
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-08T23:25:48.604Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class TransformerInfoProperties   {
@@ -30,7 +30,7 @@ public class TransformerInfoProperties   {
   }
 
    /**
-   * BioLink-model predicate describing relationship between input and output gene lists.
+   * Biolink model predicate describing relationship between input and output gene lists.
    * @return listPredicate
   **/
     public String getListPredicate() {
@@ -47,7 +47,7 @@ public class TransformerInfoProperties   {
   }
 
    /**
-   * BioLink-model predicate describing relationship between input and output genes.
+   * Biolink model predicate describing relationship between input and output genes.
    * @return memberPredicate
   **/
     public String getMemberPredicate() {

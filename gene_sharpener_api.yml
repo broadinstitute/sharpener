@@ -309,8 +309,8 @@ definitions:
         enum: [online,offline]
       function:
         type: string
-        description: Function of the transformer, one of 'producer', 'expander', 'filter'.
-        enum: [producer, expander, filter]
+        description: Function of the transformer, one of 'producer', 'expander', 'filter', or 'aggregator'.
+        enum: [producer, expander, filter, aggregator]
       description:
         type: string
         description: Description of the transformer.
