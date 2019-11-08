@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 /**
  * AggregationQuery
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-08T23:25:48.604Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class AggregationQuery   {
@@ -79,7 +79,7 @@ public class AggregationQuery   {
   }
 
    /**
-   * Ids of the gene lists to be aggreagted.
+   * Ids of the gene lists to be aggregated.
    * @return geneListIds
   **/
   @NotNull

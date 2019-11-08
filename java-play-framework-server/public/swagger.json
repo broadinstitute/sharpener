@@ -212,7 +212,7 @@
         },
         "gene_list_id" : {
           "type" : "string",
-          "description" : "Id of the gene list that will be transformed. Required for expanders and filters;  should be ommited for producers."
+          "description" : "Id of the gene list that will be transformed. Required for expanders and filters;  should be omited for producers."
         },
         "controls" : {
           "type" : "array",
@@ -416,7 +416,7 @@
         },
         "url" : {
           "type" : "string",
-          "description" : "Transformers's url."
+          "description" : "Transformer's url."
         },
         "version" : {
           "type" : "string",
@@ -429,8 +429,8 @@
         },
         "function" : {
           "type" : "string",
-          "description" : "Function of the transfomer, one of 'producer', 'expander', 'filter'.",
-          "enum" : [ "producer", "expander", "filter" ]
+          "description" : "Function of the transformer, one of 'producer', 'expander', 'filter', or 'aggregator'.",
+          "enum" : [ "producer", "expander", "filter", "aggregator" ]
         },
         "description" : {
           "type" : "string",
@@ -510,7 +510,7 @@
         },
         "biolink_class" : {
           "type" : "string",
-          "description" : "Biolink class of the paramater. Applicable to producers only and only one parameter can have a biolink class."
+          "description" : "Biolink class of the parameter. Applicable to producers only and only one parameter can have a biolink class."
         },
         "allowed_values" : {
           "type" : "array",
@@ -566,7 +566,7 @@
         "gene_list_ids" : {
           "type" : "array",
           "example" : [ "gene_lis_id_1", "gene_list_id_2" ],
-          "description" : "Ids of the gene lists to be aggreagted.",
+          "description" : "Ids of the gene lists to be aggregated.",
           "items" : {
             "type" : "string"
           }
@@ -674,11 +674,11 @@
       "properties" : {
         "list_predicate" : {
           "type" : "string",
-          "description" : "BioLink-model predicate describing relationship between input and output gene lists."
+          "description" : "Biolink model predicate describing relationship between input and output gene lists."
         },
         "member_predicate" : {
           "type" : "string",
-          "description" : "BioLink-model predicate describing relationship between input and output genes."
+          "description" : "Biolink model predicate describing relationship between input and output genes."
         },
         "source_url" : {
           "type" : "string",

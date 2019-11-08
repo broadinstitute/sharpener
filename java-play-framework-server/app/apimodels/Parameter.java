@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 /**
  * Parameter
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-08T23:25:48.604Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Parameter   {
@@ -134,7 +134,7 @@ public class Parameter   {
   }
 
    /**
-   * Biolink class of the paramater. Applicable to producers only and only one parameter can have a biolink class.
+   * Biolink class of the parameter. Applicable to producers only and only one parameter can have a biolink class.
    * @return biolinkClass
   **/
     public String getBiolinkClass() {

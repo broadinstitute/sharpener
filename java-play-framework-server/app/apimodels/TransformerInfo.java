@@ -12,7 +12,7 @@ import javax.validation.constraints.*;
 /**
  * Definition of the transformer.
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-07T16:49:46.789Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-08T23:25:48.604Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class TransformerInfo   {
@@ -63,14 +63,16 @@ public class TransformerInfo   {
   private StatusEnum status = null;
 
   /**
-   * Function of the transfomer, one of 'producer', 'expander', 'filter'.
+   * Function of the transformer, one of 'producer', 'expander', 'filter', or 'aggregator'.
    */
   public enum FunctionEnum {
     PRODUCER("producer"),
     
     EXPANDER("expander"),
     
-    FILTER("filter");
+    FILTER("filter"),
+    
+    AGGREGATOR("aggregator");
 
     private final String value;
 
@@ -151,7 +153,7 @@ public class TransformerInfo   {
   }
 
    /**
-   * Transformers's url.
+   * Transformer's url.
    * @return url
   **/
     public String getUrl() {
@@ -203,7 +205,7 @@ public class TransformerInfo   {
   }
 
    /**
-   * Function of the transfomer, one of 'producer', 'expander', 'filter'.
+   * Function of the transformer, one of 'producer', 'expander', 'filter', or 'aggregator'.
    * @return function
   **/
   @NotNull
