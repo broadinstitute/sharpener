@@ -17,6 +17,7 @@ import apimodels.Property;
 import apimodels.Attribute;
 import apimodels.GeneInfo;
 import apimodels.TransformerInfo;
+import apimodels.TransformerInfoProperties;
 import apimodels.TransformerQuery;
 import play.Logger;
 
@@ -60,6 +61,13 @@ public class Transformers {
 					URL url = new URL(baseURL + "/transformer_info");
 					info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
 					info.setStatus(ONLINE);
+					if (info.getLabel() == null || info.getLabel().length() == 0) {
+						info.setLabel(info.getName().split(" ")[0]);
+					}
+					if (info.getProperties() == null) {
+						info.setProperties(new TransformerInfoProperties()
+							.listPredicate("related_to").memberPredicate("related_to"));
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -148,6 +156,9 @@ public class Transformers {
 
 
 	private static void addSource(GeneInfo gene, String source) {
+		if (gene.getSource() == null) {
+			gene.setSource(source);			
+		}
 		for (Attribute attribute : gene.getAttributes()) {
 			if (attribute.getSource() == null) {
 				attribute.setSource(source);
