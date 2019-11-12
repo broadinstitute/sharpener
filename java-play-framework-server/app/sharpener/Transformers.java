@@ -3,9 +3,12 @@ package sharpener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +47,22 @@ public class Transformers {
 	}
 
 
+	private static Map<String,TransformerInfo> internalTransformers = loadInternalTransformers();
+	
+	private static Map<String,TransformerInfo> loadInternalTransformers() {
+		HashMap<String,TransformerInfo> map = new LinkedHashMap<String,TransformerInfo>();
+		try {
+			String json = new String(Files.readAllBytes(Paths.get("transformer_info.json")));
+			TransformerInfo[] transformers = mapper.readValue(json, TransformerInfo[].class);
+			for (TransformerInfo transformer : transformers) {
+				map.put(transformer.getName(), transformer);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
 	/**
 	 * Implement /transformers API endpoint
 	 * 
@@ -51,6 +70,9 @@ public class Transformers {
 	 */
 	public static ArrayList<TransformerInfo> getTransformers() {
 		ArrayList<TransformerInfo> transformers = new ArrayList<TransformerInfo>();
+		for (Map.Entry<String,TransformerInfo> entry : internalTransformers.entrySet()) {
+			transformers.add(entry.getValue());
+		}
 		Map<String,TransformerInfo> transformerMap = new HashMap<String,TransformerInfo>();
 		Map<String,String> urlMap = new HashMap<String,String>();
 		try {
