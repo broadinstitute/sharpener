@@ -1,6 +1,6 @@
 [
     {
-        "name": "union",
+        "name": "Gene-list union",
         "label": "union",
         "url": "",
         "status": "online",
@@ -16,7 +16,7 @@
         "required_attributes": []
     },
     {
-        "name": "intersection",
+        "name": "Gene-list intersection",
         "label": "intersection",
         "url": "",
         "status": "online",
@@ -32,7 +32,7 @@
         "required_attributes": []
     },
     {
-        "name": "difference",
+        "name": "Gene-list difference",
         "label": "difference",
         "url": "",
         "status": "online",
@@ -48,7 +48,7 @@
         "required_attributes": []
     },
     {
-        "name": "symmetric difference",
+        "name": "Gene-list symmetric difference (XOR)",
         "label": "symmetric difference",
         "url": "",
         "status": "online",
