@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 /**
  * TransformerQuery
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-08T23:25:48.604Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class TransformerQuery   {
@@ -48,7 +48,7 @@ public class TransformerQuery   {
   }
 
    /**
-   * Id of the gene list that will be transformed. Required for expanders and filters;  should be ommited for producers.
+   * Id of the gene list that will be transformed. Required for expanders and filters;  should be omited for producers.
    * @return geneListId
   **/
     public String getGeneListId() {

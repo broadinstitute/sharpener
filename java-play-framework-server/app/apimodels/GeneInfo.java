@@ -12,7 +12,7 @@ import javax.validation.constraints.*;
 /**
  * GeneInfo
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-09-06T15:15:15.958Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaPlayFrameworkCodegen", date = "2019-11-08T23:25:48.604Z")
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class GeneInfo   {
@@ -24,6 +24,9 @@ public class GeneInfo   {
 
   @JsonProperty("attributes")
   private List<Attribute> attributes = null;
+
+  @JsonProperty("source")
+  private String source = null;
 
   public GeneInfo geneId(String geneId) {
     this.geneId = geneId;
@@ -87,6 +90,23 @@ public class GeneInfo   {
     this.attributes = attributes;
   }
 
+  public GeneInfo source(String source) {
+    this.source = source;
+    return this;
+  }
+
+   /**
+   * Name of a transformer that added gene to the gene list.
+   * @return source
+  **/
+    public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -99,12 +119,13 @@ public class GeneInfo   {
     GeneInfo geneInfo = (GeneInfo) o;
     return Objects.equals(geneId, geneInfo.geneId) &&
         Objects.equals(identifiers, geneInfo.identifiers) &&
-        Objects.equals(attributes, geneInfo.attributes);
+        Objects.equals(attributes, geneInfo.attributes) &&
+        Objects.equals(source, geneInfo.source);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(geneId, identifiers, attributes);
+    return Objects.hash(geneId, identifiers, attributes, source);
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
@@ -116,6 +137,7 @@ public class GeneInfo   {
     sb.append("    geneId: ").append(toIndentedString(geneId)).append("\n");
     sb.append("    identifiers: ").append(toIndentedString(identifiers)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
+    sb.append("    source: ").append(toIndentedString(source)).append("\n");
     sb.append("}");
     return sb.toString();
   }

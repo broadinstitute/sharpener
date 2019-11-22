@@ -40,7 +40,7 @@ public class GeneLists {
 			try {
 				GeneInfo geneInfo = MyGene.Info.querySymbol(symbol);
 				if (geneInfo != null) {
-					geneInfo.addAttributesItem(new Attribute().name("source").value("user input").source("user input"));
+					geneInfo.setSource("user input");
 					geneList.addGenesItem(geneInfo);
 				}
 			} catch (Exception e) {
@@ -108,6 +108,7 @@ public class GeneLists {
 				if (!genes.containsKey(geneId)) {
 					GeneInfo unionGene = new GeneInfo().geneId(geneId);
 					unionGene.setIdentifiers(gene.getIdentifiers());
+					unionGene.setSource(source.getSource());
 					geneList.addGenesItem(unionGene);
 					genes.put(geneId, unionGene);
 				}
@@ -123,7 +124,9 @@ public class GeneLists {
 		GeneList source = findGeneList(geneListIds.get(0));
 		HashMap<String,GeneInfo> intersection = new HashMap<String,GeneInfo>();
 		for (GeneInfo gene : source.getGenes()) {
-			intersection.put(gene.getGeneId(), new GeneInfo().geneId(gene.getGeneId()).identifiers(gene.getIdentifiers()));
+			GeneInfo geneInfo = new GeneInfo();
+			geneInfo.geneId(gene.getGeneId()).identifiers(gene.getIdentifiers()).source(source.getSource());
+			intersection.put(gene.getGeneId(), geneInfo);
 		}
 		for (String geneListId : geneListIds) {
 			source = findGeneList(geneListId);

@@ -1,7 +1,7 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "1.2.0",
+    "version" : "1.3.0",
     "title" : "Sharpener API"
   },
   "host" : "sharpener.ncats.io",
@@ -77,6 +77,24 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/gene_list"
+            }
+          },
+          "400" : {
+            "description" : "bad request",
+            "schema" : {
+              "$ref" : "#/definitions/error_msg"
+            }
+          },
+          "404" : {
+            "description" : "not found",
+            "schema" : {
+              "$ref" : "#/definitions/error_msg"
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/error_msg"
             }
           }
         },
@@ -194,7 +212,7 @@
         },
         "gene_list_id" : {
           "type" : "string",
-          "description" : "Id of the gene list that will be transformed. Required for expanders and filters;  should be ommited for producers."
+          "description" : "Id of the gene list that will be transformed. Required for expanders and filters;  should be omited for producers."
         },
         "controls" : {
           "type" : "array",
@@ -251,12 +269,15 @@
           "attributes" : [ {
             "name" : "name",
             "source" : "source",
-            "value" : "value"
+            "value" : "value",
+            "url" : "url"
           }, {
             "name" : "name",
             "source" : "source",
-            "value" : "value"
+            "value" : "value",
+            "url" : "url"
           } ],
+          "source" : "source",
           "gene_id" : "gene_id"
         }, {
           "identifiers" : {
@@ -269,23 +290,28 @@
           "attributes" : [ {
             "name" : "name",
             "source" : "source",
-            "value" : "value"
+            "value" : "value",
+            "url" : "url"
           }, {
             "name" : "name",
             "source" : "source",
-            "value" : "value"
+            "value" : "value",
+            "url" : "url"
           } ],
+          "source" : "source",
           "gene_id" : "gene_id"
         } ],
         "gene_list_id" : "gene_list_id",
         "attributes" : [ {
           "name" : "name",
           "source" : "source",
-          "value" : "value"
+          "value" : "value",
+          "url" : "url"
         }, {
           "name" : "name",
           "source" : "source",
-          "value" : "value"
+          "value" : "value",
+          "url" : "url"
         } ],
         "source" : "source"
       }
@@ -307,6 +333,10 @@
           "items" : {
             "$ref" : "#/definitions/attribute"
           }
+        },
+        "source" : {
+          "type" : "string",
+          "description" : "Name of a transformer that added gene to the gene list."
         }
       },
       "example" : {
@@ -320,33 +350,44 @@
         "attributes" : [ {
           "name" : "name",
           "source" : "source",
-          "value" : "value"
+          "value" : "value",
+          "url" : "url"
         }, {
           "name" : "name",
           "source" : "source",
-          "value" : "value"
+          "value" : "value",
+          "url" : "url"
         } ],
+        "source" : "source",
         "gene_id" : "gene_id"
       }
     },
     "attribute" : {
       "type" : "object",
-      "required" : [ "name", "value" ],
+      "required" : [ "name", "source", "value" ],
       "properties" : {
         "name" : {
-          "type" : "string"
+          "type" : "string",
+          "description" : "Name of the attribute."
         },
         "value" : {
-          "type" : "string"
+          "type" : "string",
+          "description" : "Value of the attribute."
         },
         "source" : {
-          "type" : "string"
+          "type" : "string",
+          "description" : "Transformer that produced the attribute's value."
+        },
+        "url" : {
+          "type" : "string",
+          "description" : "URL for additional information."
         }
       },
       "example" : {
         "name" : "name",
         "source" : "source",
-        "value" : "value"
+        "value" : "value",
+        "url" : "url"
       }
     },
     "property" : {
@@ -369,9 +410,17 @@
           "type" : "string",
           "description" : "Name of the transformer."
         },
+        "label" : {
+          "type" : "string",
+          "description" : "Short label for GUI display."
+        },
         "url" : {
           "type" : "string",
-          "description" : "Transformers's url."
+          "description" : "Transformer's url."
+        },
+        "version" : {
+          "type" : "string",
+          "description" : "Transformer's version."
         },
         "status" : {
           "type" : "string",
@@ -380,12 +429,15 @@
         },
         "function" : {
           "type" : "string",
-          "description" : "Function of the transfomer, one of 'producer', 'expander', 'filter'.",
-          "enum" : [ "producer", "expander", "filter" ]
+          "description" : "Function of the transformer, one of 'producer', 'expander', 'filter', or 'aggregator'.",
+          "enum" : [ "producer", "expander", "filter", "aggregator" ]
         },
         "description" : {
           "type" : "string",
           "description" : "Description of the transformer."
+        },
+        "properties" : {
+          "$ref" : "#/definitions/transformer_info_properties"
         },
         "parameters" : {
           "type" : "array",
@@ -408,22 +460,34 @@
         "function" : "producer",
         "name" : "name",
         "description" : "description",
+        "label" : "label",
+        "version" : "version",
         "parameters" : [ {
           "allowed_values" : [ "allowed_values", "allowed_values" ],
+          "biolink_class" : "biolink_class",
           "default" : "default",
+          "allowed_range" : [ 0.80082819046101150206595775671303272247314453125, 0.80082819046101150206595775671303272247314453125 ],
           "name" : "name",
           "suggested_values" : "suggested_values",
           "lookup_url" : "lookup_url",
           "type" : "Boolean"
         }, {
           "allowed_values" : [ "allowed_values", "allowed_values" ],
+          "biolink_class" : "biolink_class",
           "default" : "default",
+          "allowed_range" : [ 0.80082819046101150206595775671303272247314453125, 0.80082819046101150206595775671303272247314453125 ],
           "name" : "name",
           "suggested_values" : "suggested_values",
           "lookup_url" : "lookup_url",
           "type" : "Boolean"
         } ],
         "url" : "url",
+        "properties" : {
+          "list_predicate" : "list_predicate",
+          "method" : "method",
+          "member_predicate" : "member_predicate",
+          "source_url" : "source_url"
+        },
         "status" : "online"
       }
     },
@@ -444,12 +508,25 @@
           "type" : "string",
           "description" : "Default value of the parameter."
         },
+        "biolink_class" : {
+          "type" : "string",
+          "description" : "Biolink class of the parameter. Applicable to producers only and only one parameter can have a biolink class."
+        },
         "allowed_values" : {
           "type" : "array",
           "description" : "Allowed values for the parameter.",
           "items" : {
             "type" : "string"
           }
+        },
+        "allowed_range" : {
+          "type" : "array",
+          "description" : "Allowed range for values of the parameter.",
+          "items" : {
+            "type" : "number"
+          },
+          "maxItems" : 2,
+          "minItems" : 2
         },
         "suggested_values" : {
           "type" : "string",
@@ -462,7 +539,9 @@
       },
       "example" : {
         "allowed_values" : [ "allowed_values", "allowed_values" ],
+        "biolink_class" : "biolink_class",
         "default" : "default",
+        "allowed_range" : [ 0.80082819046101150206595775671303272247314453125, 0.80082819046101150206595775671303272247314453125 ],
         "name" : "name",
         "suggested_values" : "suggested_values",
         "lookup_url" : "lookup_url",
@@ -477,10 +556,17 @@
           "type" : "string",
           "description" : "Gene-list aggregation operation, one of 'union', 'intersection', 'difference','symmetric difference'."
         },
+        "controls" : {
+          "type" : "array",
+          "description" : "Values that control the behavior of the aggregator. Names of the controls must match the names specified in the aggregator's definition and values must match types (and possibly  allowed_values) specified in the aggregator's definition.",
+          "items" : {
+            "$ref" : "#/definitions/property"
+          }
+        },
         "gene_list_ids" : {
           "type" : "array",
           "example" : [ "gene_lis_id_1", "gene_list_id_2" ],
-          "description" : "Ids of the gene lists to be aggreagted.",
+          "description" : "Ids of the gene lists to be aggregated.",
           "items" : {
             "type" : "string"
           }
@@ -511,9 +597,14 @@
         "total_steps" : {
           "type" : "integer",
           "description" : "Total number of steps in the transformation request (optional)."
+        },
+        "error_msg" : {
+          "type" : "string",
+          "description" : "Error message (for failed requests)."
         }
       },
       "example" : {
+        "error_msg" : "error_msg",
         "gene_list_id" : "gene_list_id",
         "total_steps" : 6,
         "request_id" : "request_id",
@@ -521,7 +612,25 @@
         "current_step" : 0
       }
     },
+    "error_msg" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "integer"
+        },
+        "title" : {
+          "type" : "string"
+        },
+        "detail" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        }
+      }
+    },
     "gene_info_identifiers" : {
+      "type" : "object",
       "properties" : {
         "entrez" : {
           "type" : "string",
@@ -558,6 +667,34 @@
         "ensembl" : [ "ENSEMBL:ENSG00000196839", "ENSEMBL:ENSG00000196839" ],
         "hgnc" : "HGNC:186",
         "mygene_info" : "100"
+      }
+    },
+    "transformer_info_properties" : {
+      "type" : "object",
+      "properties" : {
+        "list_predicate" : {
+          "type" : "string",
+          "description" : "Biolink model predicate describing relationship between input and output gene lists."
+        },
+        "member_predicate" : {
+          "type" : "string",
+          "description" : "Biolink model predicate describing relationship between input and output genes."
+        },
+        "source_url" : {
+          "type" : "string",
+          "description" : "URL for underlying data or a wrapped service."
+        },
+        "method" : {
+          "type" : "string",
+          "description" : "A method used to generate output gene lists."
+        }
+      },
+      "description" : "Additional metadata for the transformer.",
+      "example" : {
+        "list_predicate" : "list_predicate",
+        "method" : "method",
+        "member_predicate" : "member_predicate",
+        "source_url" : "source_url"
       }
     }
   }

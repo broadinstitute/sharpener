@@ -3,13 +3,17 @@ package sharpener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apimodels.GeneList;
@@ -17,6 +21,7 @@ import apimodels.Property;
 import apimodels.Attribute;
 import apimodels.GeneInfo;
 import apimodels.TransformerInfo;
+import apimodels.TransformerInfoProperties;
 import apimodels.TransformerQuery;
 import play.Logger;
 
@@ -40,9 +45,26 @@ public class Transformers {
 	
 	static {
 		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 
+	private static Map<String,TransformerInfo> internalTransformers = loadInternalTransformers();
+	
+	private static Map<String,TransformerInfo> loadInternalTransformers() {
+		HashMap<String,TransformerInfo> map = new LinkedHashMap<String,TransformerInfo>();
+		try {
+			String json = new String(Files.readAllBytes(Paths.get("transformer_info.json")));
+			TransformerInfo[] transformers = mapper.readValue(json, TransformerInfo[].class);
+			for (TransformerInfo transformer : transformers) {
+				map.put(transformer.getName(), transformer);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
 	/**
 	 * Implement /transformers API endpoint
 	 * 
@@ -50,6 +72,9 @@ public class Transformers {
 	 */
 	public static ArrayList<TransformerInfo> getTransformers() {
 		ArrayList<TransformerInfo> transformers = new ArrayList<TransformerInfo>();
+		for (Map.Entry<String,TransformerInfo> entry : internalTransformers.entrySet()) {
+			transformers.add(entry.getValue());
+		}
 		Map<String,TransformerInfo> transformerMap = new HashMap<String,TransformerInfo>();
 		Map<String,String> urlMap = new HashMap<String,String>();
 		try {
@@ -60,6 +85,13 @@ public class Transformers {
 					URL url = new URL(baseURL + "/transformer_info");
 					info = mapper.readValue(HTTP.get(url), TransformerInfo.class);
 					info.setStatus(ONLINE);
+					if (info.getLabel() == null || info.getLabel().length() == 0) {
+						info.setLabel(info.getName().split(" ")[0]);
+					}
+					if (info.getProperties() == null) {
+						info.setProperties(new TransformerInfoProperties()
+							.listPredicate("related_to").memberPredicate("related_to"));
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -148,6 +180,9 @@ public class Transformers {
 
 
 	private static void addSource(GeneInfo gene, String source) {
+		if (gene.getSource() == null) {
+			gene.setSource(source);			
+		}
 		for (Attribute attribute : gene.getAttributes()) {
 			if (attribute.getSource() == null) {
 				attribute.setSource(source);

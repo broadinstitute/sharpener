@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: Sharpener API
-  version: 1.2.0
+  version: 1.3.0
 
 host: sharpener.ncats.io
 basePath: /api
@@ -67,6 +67,18 @@ paths:
           description: successful operation
           schema:
             $ref: '#/definitions/gene_list'
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/error_msg'
+        404:
+          description: not found
+          schema:
+            $ref: '#/definitions/error_msg'
+        500:
+          description: internal server error
+          schema:
+            $ref: '#/definitions/error_msg'
             
   /aggregate:
     post:
@@ -157,7 +169,7 @@ definitions:
         type: string
         description: >-
           Id of the gene list that will be transformed. Required for expanders and filters; 
-          should be ommited for producers.
+          should be omited for producers.
       controls:
         type: array
         items:
@@ -239,6 +251,9 @@ definitions:
           Additional information about the gene and provenance about gene-list membership. Sharpener
           will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene. 
           Multiple synonyms are separated by semicolons.
+      source:
+        type: string
+        description: Name of a transformer that added gene to the gene list.
     required: 
       - gene_id
 
@@ -247,13 +262,20 @@ definitions:
     properties:
       name:
         type: string
+        description: Name of the attribute.
       value:
         type: string
+        description: Value of the attribute.
       source:
         type: string
+        description: Transformer that produced the attribute's value.
+      url:
+        type: string
+        description: URL for additional information.
     required: 
       - name
       - value
+      - source
 
   property:
     type: object
@@ -272,20 +294,42 @@ definitions:
       name:
         type: string
         description: Name of the transformer.
+      label:
+        type: string
+        description: Short label for GUI display.
       url:
         type: string
-        description: Transformers's url.
+        description: Transformer's url.
+      version:
+        type: string
+        description: Transformer's version.
       status:
         type: string
         description: Status of the transformer, one of 'online', 'offline'.
         enum: [online,offline]
       function:
         type: string
-        description: Function of the transfomer, one of 'producer', 'expander', 'filter'.
-        enum: [producer, expander, filter]
+        description: Function of the transformer, one of 'producer', 'expander', 'filter', or 'aggregator'.
+        enum: [producer, expander, filter, aggregator]
       description:
         type: string
         description: Description of the transformer.
+      properties:
+        type: object
+        description: Additional metadata for the transformer.
+        properties:
+          list_predicate:
+            type: string
+            description: Biolink model predicate describing relationship between input and output gene lists.
+          member_predicate:
+            type: string
+            description: Biolink model predicate describing relationship between input and output genes.
+          source_url:
+            type: string
+            description: URL for underlying data or a wrapped service.
+          method:
+            type: string
+            description: A method used to generate output gene lists.
       parameters:
         type: array
         items:
@@ -315,11 +359,23 @@ definitions:
       default:
         type: string
         description: Default value of the parameter.
+      biolink_class:
+        type: string
+        description: >- 
+          Biolink class of the parameter. Applicable to producers only and only one parameter
+          can have a biolink class.
       allowed_values: 
         type: array
         items:
           type: string
         description: Allowed values for the parameter.
+      allowed_range: 
+        type: array
+        items:
+          type: number
+        description: Allowed range for values of the parameter.
+        minItems: 2
+        maxItems: 2
       suggested_values:
         type: string
         description: Suggested value range for the parameter.
@@ -337,11 +393,19 @@ definitions:
       operation:
         type: string
         description: Gene-list aggregation operation, one of 'union', 'intersection', 'difference','symmetric difference'.
+      controls:
+        type: array
+        items:
+          $ref: '#/definitions/property'
+        description: >-
+          Values that control the behavior of the aggregator. Names of the controls must match the names
+          specified in the aggregator's definition and values must match types (and possibly 
+          allowed_values) specified in the aggregator's definition.
       gene_list_ids:
         type: array
         items:
           type: string
-        description: Ids of the gene lists to be aggreagted.
+        description: Ids of the gene lists to be aggregated.
         example: [gene_lis_id_1, gene_list_id_2]
     required: 
       - operation
@@ -366,7 +430,21 @@ definitions:
       total_steps:
         type: integer
         description: Total number of steps in the transformation request (optional).
+      error_msg:
+        type: string
+        description: Error message (for failed requests).
     required:
       - request_id
       - status
+  error_msg:
+    type: object
+    properties:
+      status:
+        type: integer
+      title:
+        type: string
+      detail:
+        type: string
+      type:
+        type: string
 

@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: API for gene-list transformers
-  version: 1.2.0
+  version: 1.3.0
   description: API for gene-list transformers.
 host: sharpener.ncats.io
 basePath: /<transformer-path>
@@ -39,6 +39,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/gene_info'
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/error_msg'
+        500:
+          description: internal server error
+          schema:
+            $ref: '#/definitions/error_msg'
         
 definitions:
 
@@ -102,6 +110,9 @@ definitions:
           Additional information about the gene and provenance about gene-list membership. Sharpener
           will use myGene.info to add 'gene_symbol', 'synonyms', and 'gene_name' to every gene. 
           Multiple synonyms are separated by semicolons.
+      source:
+        type: string
+        description: Name of a transformer that added gene to the gene list.
     required: 
     - gene_id
 
@@ -110,13 +121,20 @@ definitions:
     properties:
       name:
         type: string
+        description: Name of the attribute.
       value:
         type: string
+        description: Value of the attribute.
       source:
         type: string
+        description: Transformer that produced the attribute's value.
+      url:
+        type: string
+        description: URL for additional information.
     required: 
-    - name
-    - value
+      - name
+      - value
+      - source
 
   property:
     type: object
@@ -135,6 +153,12 @@ definitions:
       name:
         type: string
         description: Name of the transformer.
+      label:
+        type: string
+        description: Short label for GUI display.
+      version:
+        type: string
+        description: Transformer's version.
       function:
         type: string
         description: Function of the transformer, one of 'producer', 'expander', 'filter'.
@@ -142,6 +166,22 @@ definitions:
       description:
         type: string
         description: Description of the transformer.
+      properties:
+        type: object
+        description: Additional metadata for the transformer.
+        properties:
+          list_predicate:
+            type: string
+            description: BioLink-model predicate describing relationship between input and output gene lists.
+          member_predicate:
+            type: string
+            description: BioLink-model predicate describing relationship between input and output genes.
+          source_url:
+            type: string
+            description: URL for underlying data or a wrapped service.
+          method:
+            type: string
+            description: A method used to generate output gene lists.
       parameters:
         type: array
         items:
@@ -174,11 +214,23 @@ definitions:
       default:
         type: string
         description: Default value of the parameter.
+      biolink_class:
+        type: string
+        description: >- 
+          Biolink class of the paramater. Applicable to producers only and only one parameter
+          can have a biolink class.
       allowed_values: 
         type: array
         items:
           type: string
         description: Allowed values for the parameter.
+      allowed_range: 
+        type: array
+        items:
+          type: number
+        description: Allowed range for values of the parameter.
+        minItems: 2
+        maxItems: 2
       suggested_values:
         type: string
         description: Suggested value range for the parameter.
@@ -190,3 +242,14 @@ definitions:
     - type
     - default
 
+  error_msg:
+    type: object
+    properties:
+      status:
+        type: integer
+      title:
+        type: string
+      detail:
+        type: string
+      type:
+        type: string
