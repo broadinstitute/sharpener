@@ -69,13 +69,13 @@ public class GeneLists {
 			}
 		}		
 		
-		if (operation.equals("union")) {
+		if (operation.equals("union") || operation.equals("Gene-list union")) {
 			return union(geneListIds);
-		} else if (operation.equals("intersection")) {
+		} else if (operation.equals("intersection") || operation.equals("Gene-list intersection")) {
 			return intersection(geneListIds);
-		} else if (operation.equals("difference")) {
+		} else if (operation.equals("difference") || operation.equals("Gene-list difference")) {
 			return difference(geneListIds);
-		} else if (operation.equals("symmetric difference")) {
+		} else if (operation.equals("symmetric difference") || operation.equals("Gene-list symmetric difference (XOR)")) {
 			return symDifference(geneListIds);
 		} else {
 			return error("unknown aggregation operation", "/aggregate");
