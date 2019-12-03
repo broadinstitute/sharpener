@@ -13,6 +13,8 @@ import apimodels.GeneList;
 
 public class GeneLists {
 
+	private static final ArrayList<Attribute> NO_ATTRIBUTES = new ArrayList<Attribute>();
+
 	private static TimeOrderedMap<String,GeneList> geneLists = new TimeOrderedMap<String,GeneList>(14 * 24 * 60 * 60 * 1000/* two weeks */);
 
 	private static IdGenerator idGenerator = new IdGenerator(10, geneLists);
@@ -35,7 +37,7 @@ public class GeneLists {
 	 */
 	public static GeneList createList(List<String> genes) {
 		GeneList geneList = new GeneList();
-		geneList.source("user input").attributes(new ArrayList<Attribute>());
+		geneList.source("user input").attributes(NO_ATTRIBUTES);
 		for (String symbol : genes)
 			try {
 				GeneInfo geneInfo = MyGene.Info.querySymbol(symbol);
@@ -100,7 +102,7 @@ public class GeneLists {
 
 	private static GeneList union(List<String> geneListIds) {
 		HashMap<String,GeneInfo> genes = new HashMap<String,GeneInfo>();
-		GeneList geneList = new GeneList().source("Gene-list union");
+		GeneList geneList = new GeneList().source("Gene-list union").attributes(NO_ATTRIBUTES);
 		for (String geneListId : geneListIds) {
 			GeneList source = findGeneList(geneListId);
 			for (GeneInfo gene : source.getGenes()) {
@@ -140,7 +142,7 @@ public class GeneLists {
 			}
 			intersection = newIntersection;
 		}
-		GeneList geneList = new GeneList().source("Gene-list intersection");
+		GeneList geneList = new GeneList().source("Gene-list intersection").attributes(NO_ATTRIBUTES);
 		for (GeneInfo gene : intersection.values()) {
 			geneList.addGenesItem(gene);
 		}
@@ -163,7 +165,7 @@ public class GeneLists {
 				}
 			}
 		}
-		GeneList geneList = new GeneList().source("Gene-list difference");
+		GeneList geneList = new GeneList().source("Gene-list difference").attributes(NO_ATTRIBUTES);
 		for (GeneInfo gene : findGeneList(first).getGenes()) {
 			if (!removeGenes.contains(gene.getGeneId())) {
 				geneList.addGenesItem(gene);
@@ -179,7 +181,7 @@ public class GeneLists {
 		for (GeneInfo gene : intersection(geneListIds).getGenes()) {
 			intersection.add(gene.getGeneId());
 		}
-		GeneList geneList = new GeneList().source("Gene-list symmetric difference");
+		GeneList geneList = new GeneList().source("Gene-list symmetric difference").attributes(NO_ATTRIBUTES);
 		for (GeneInfo gene : union(geneListIds).getGenes()) {
 			if (!intersection.contains(gene.getGeneId())) {
 				geneList.addGenesItem(gene);
@@ -212,6 +214,9 @@ public class GeneLists {
 	private synchronized static void save(GeneList geneList) {
 		String id = idGenerator.nextId();
 		geneList.setGeneListId(id);
+		if (geneList.getAttributes() == null) {
+			geneList.setAttributes(NO_ATTRIBUTES);
+		}
 		geneLists.put(id, geneList);
 	}
 
