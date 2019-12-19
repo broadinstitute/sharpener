@@ -175,6 +175,9 @@ public class Transformers {
 		for (Property property : query.getControls()) {
 			geneList.addAttributesItem(new Attribute().name(property.getName()).source(transformerName).value(property.getValue()));
 		}
+		if (geneList.getAttributes() == null) {
+			geneList.setAttributes(GeneLists.NO_ATTRIBUTES);
+		}
 		return geneList;
 	}
 

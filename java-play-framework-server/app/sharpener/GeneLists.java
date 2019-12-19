@@ -13,7 +13,7 @@ import apimodels.GeneList;
 
 public class GeneLists {
 
-	private static final ArrayList<Attribute> NO_ATTRIBUTES = new ArrayList<Attribute>();
+	static final ArrayList<Attribute> NO_ATTRIBUTES = new ArrayList<Attribute>();
 
 	private static TimeOrderedMap<String,GeneList> geneLists = new TimeOrderedMap<String,GeneList>(14 * 24 * 60 * 60 * 1000/* two weeks */);
 
@@ -214,9 +214,6 @@ public class GeneLists {
 	private synchronized static void save(GeneList geneList) {
 		String id = idGenerator.nextId();
 		geneList.setGeneListId(id);
-		if (geneList.getAttributes() == null) {
-			geneList.setAttributes(NO_ATTRIBUTES);
-		}
 		geneLists.put(id, geneList);
 	}
 
