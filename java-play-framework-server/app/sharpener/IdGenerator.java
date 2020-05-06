@@ -16,7 +16,7 @@ public class IdGenerator {
 	public synchronized String nextId() {
 		String id = randString(idLength);
 		while (container.contains(id)) {
-			id = randString(10);
+			id = randString(idLength);
 		}
 		return id;
 	}
